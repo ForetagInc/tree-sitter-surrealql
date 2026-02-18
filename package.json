@@ -1,14 +1,14 @@
 {
-  "name": "tree-sitter-surreal",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@biomejs/biome": "^2.4.2",
-    "@types/bun": "latest",
-    "tree-sitter-cli": "^0.26.5"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+	"name": "tree-sitter-surreal",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.2",
+		"@types/bun": "latest",
+		"tree-sitter-cli": "^0.26.5"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
 }

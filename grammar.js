@@ -1360,10 +1360,10 @@ export default grammar({
 				seq($.keyword_count, $.argument_list_count),
 				seq(
 					choice(
+						$.builtin_function_name,
 						$.function_name,
 						$.custom_function_name,
 						$.keyword_rand,
-						seq($.identifier, repeat1(seq('::', $.identifier))),
 					),
 					optional($.version),
 					$.argument_list,
@@ -1533,6 +1533,13 @@ export default grammar({
 		variable_name: (_) => /\$[a-zA-Z_][a-zA-Z0-9_]*/,
 		identifier: (_) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 		custom_function_name: (_) => /fn(::[a-zA-Z_][a-zA-Z0-9_]*)*/,
+		builtin_function_name: (_) =>
+			token(
+				prec(
+					1,
+					/(array|crypto|duration|encoding|geo|http|math|meta|not|object|parse|rand|record|search|session|sleep|string|time|type|vector)::[a-zA-Z_][a-zA-Z0-9_]*(::[a-zA-Z_][a-zA-Z0-9_]*)?/,
+				),
+			),
 		function_name: (_) =>
 			/[a-zA-Z_][a-zA-Z0-9_]*(::[a-zA-Z_][a-zA-Z0-9_]*)*/,
 		version_number: (_) => /[0-9]+(\.[0-9]+(\.[0-9]+)?)?/,

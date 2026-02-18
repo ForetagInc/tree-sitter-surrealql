@@ -23,17 +23,12 @@
   (keyword_then) @keyword.control)
 
 (function_call
+  (builtin_function_name) @function.builtin)
+
+(function_call
   (custom_function_name) @function)
 
 (function_call
   (function_name) @function)
-
-(function_call
-  (function_name) @function.builtin
-  (#match? @function.builtin "^(array|crypto|duration|encoding|geo|http|math|meta|not|object|parse|rand|record|search|session|sleep|string|time|type|vector)::[a-zA-Z_][a-zA-Z0-9_]*$"))
-
-(function_call
-  (function_name) @function.special
-  (#match? @function.special "^(array|crypto|duration|encoding|geo|http|math|meta|not|object|parse|rand|record|search|session|sleep|string|time|type|vector)::[a-zA-Z_][a-zA-Z0-9_]*::[a-zA-Z_][a-zA-Z0-9_]*$"))
 
 (variable_name) @variable.parameter

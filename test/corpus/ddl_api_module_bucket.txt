@@ -95,7 +95,7 @@ DEFINE API "/test"
                                           (type_name)
                                           (value
                                             (function_call
-                                              (function_name)
+                                              (builtin_function_name)
                                               (argument_list))))))
                                     (object_property
                                       (string)
@@ -110,7 +110,7 @@ DEFINE API "/test"
                                                     (binary_expression
                                                       (value
                                                         (function_call
-                                                          (function_name)
+                                                          (builtin_function_name)
                                                           (argument_list)))
                                                       (operator
                                                         (binary_operator))

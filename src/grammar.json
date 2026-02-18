@@ -7620,6 +7620,10 @@
               "members": [
                 {
                   "type": "SYMBOL",
+                  "name": "builtin_function_name"
+                },
+                {
+                  "type": "SYMBOL",
                   "name": "function_name"
                 },
                 {
@@ -7629,31 +7633,6 @@
                 {
                   "type": "SYMBOL",
                   "name": "keyword_rand"
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "identifier"
-                    },
-                    {
-                      "type": "REPEAT1",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": "::"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "identifier"
-                          }
-                        ]
-                      }
-                    }
-                  ]
                 }
               ]
             },
@@ -8776,6 +8755,17 @@
     "custom_function_name": {
       "type": "PATTERN",
       "value": "fn(::[a-zA-Z_][a-zA-Z0-9_]*)*"
+    },
+    "builtin_function_name": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "(array|crypto|duration|encoding|geo|http|math|meta|not|object|parse|rand|record|search|session|sleep|string|time|type|vector)::[a-zA-Z_][a-zA-Z0-9_]*(::[a-zA-Z_][a-zA-Z0-9_]*)?"
+        }
+      }
     },
     "function_name": {
       "type": "PATTERN",

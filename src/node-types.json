@@ -2199,15 +2199,15 @@
           "named": true
         },
         {
+          "type": "builtin_function_name",
+          "named": true
+        },
+        {
           "type": "custom_function_name",
           "named": true
         },
         {
           "type": "function_name",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         },
         {
@@ -5451,6 +5451,10 @@
   {
     "type": "blank",
     "named": false
+  },
+  {
+    "type": "builtin_function_name",
+    "named": true
   },
   {
     "type": "camel",

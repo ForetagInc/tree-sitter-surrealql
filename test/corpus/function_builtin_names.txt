@@ -1,0 +1,74 @@
+==================
+Builtin Function Two Segment
+==================
+
+RETURN string::is_email("foo@example.com");
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (return_statement
+          (return_clause
+            (keyword_return)
+            (value
+              (function_call
+                (builtin_function_name)
+                (argument_list
+                  (value
+                    (base_value
+                      (string))))))))))
+    (semi_colon)))
+
+==================
+Builtin Function Three Segment
+==================
+
+RETURN crypto::argon2::compare("a","b");
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (return_statement
+          (return_clause
+            (keyword_return)
+            (value
+              (function_call
+                (builtin_function_name)
+                (argument_list
+                  (value
+                    (base_value
+                      (string)))
+                  (value
+                    (base_value
+                      (string))))))))))
+    (semi_colon)))
+
+==================
+Custom Function
+==================
+
+RETURN fn::my_udf($x);
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (return_statement
+          (return_clause
+            (keyword_return)
+            (value
+              (function_call
+                (custom_function_name)
+                (argument_list
+                  (value
+                    (base_value
+                      (variable_name))))))))))
+    (semi_colon)))

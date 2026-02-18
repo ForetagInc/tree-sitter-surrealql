@@ -1,0 +1,244 @@
+==================
+Define API Full
+==================
+
+DEFINE API "/test"
+    FOR get, post 
+        MIDDLEWARE
+            api::timeout(1s)
+        THEN {
+            {
+                status: 200,
+                body: {
+                    request: $request.body,
+                    response: "The server works"
+                },
+                headers: {
+                    'last-modified': <string>time::now(),
+                    'expires': <string>(time::now() + 4d)
+                }
+            };
+        };
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_api_statement
+          (keyword_define)
+          (keyword_api)
+          (value
+            (base_value
+              (string)))
+          (api_for_clause
+            (keyword_for)
+            (api_method
+              (identifier))
+            (api_method
+              (identifier)))
+          (api_middleware_clause
+            (keyword_middleware)
+            (function_call
+              (function_name)
+              (argument_list
+                (value
+                  (base_value
+                    (duration
+                      (duration_part)))))))
+          (api_then_clause
+            (keyword_then)
+            (block
+              (expressions
+                (expression
+                  (value
+                    (base_value
+                      (object
+                        (object_content
+                          (object_property
+                            (object_key)
+                            (value
+                              (base_value
+                                (number
+                                  (int)))))
+                          (object_property
+                            (object_key)
+                            (value
+                              (base_value
+                                (object
+                                  (object_content
+                                    (object_property
+                                      (object_key)
+                                      (value
+                                        (path
+                                          (base_value
+                                            (variable_name))
+                                          (path_element
+                                            (subscript
+                                              (identifier))))))
+                                    (object_property
+                                      (object_key)
+                                      (value
+                                        (base_value
+                                          (string)))))))))
+                          (object_property
+                            (object_key)
+                            (value
+                              (base_value
+                                (object
+                                  (object_content
+                                    (object_property
+                                      (string)
+                                      (value
+                                        (cast_expression
+                                          (type_name)
+                                          (value
+                                            (function_call
+                                              (function_name)
+                                              (argument_list))))))
+                                    (object_property
+                                      (string)
+                                      (value
+                                        (cast_expression
+                                          (type_name)
+                                          (value
+                                            (base_value
+                                              (sub_query
+                                                (expression
+                                                  (value
+                                                    (binary_expression
+                                                      (value
+                                                        (function_call
+                                                          (function_name)
+                                                          (argument_list)))
+                                                      (operator
+                                                        (binary_operator))
+                                                      (value
+                                                        (base_value
+                                                          (duration
+                                                            (duration_part)))))))))))))))))))))))
+                (semi_colon)))))))
+    (semi_colon)))
+
+==================
+Define Module
+==================
+
+DEFINE MODULE mod::test AS f"test:/demo.surli";
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_module_statement
+          (keyword_define)
+          (keyword_module)
+          (module_name
+            (identifier)
+            (identifier))
+          (keyword_as)
+          (prefixed_string))))
+    (semi_colon)))
+
+==================
+Define Bucket
+==================
+
+DEFINE BUCKET my_bucket BACKEND "memory";
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_bucket_statement
+          (keyword_define)
+          (keyword_bucket)
+          (identifier)
+          (bucket_backend_clause
+            (keyword_backend)
+            (string)))))
+    (semi_colon)))
+
+==================
+File Uri Calls
+==================
+
+f"my_bucket:/my_book.txt".put("Once there were four children whose names were Peter, Susan, Edmund, and Lucy.");
+f"my_bucket:/my_book.txt".get();
+f"my_bucket:/my_book.txt".copy(f"my_bucket:/my_book_backup.txt");
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (value
+        (path
+          (base_value
+            (prefixed_string))
+          (path_element
+            (subscript
+              (identifier)
+              (argument_list
+                (value
+                  (base_value
+                    (string)))))))))
+    (semi_colon)
+    (expression
+      (value
+        (path
+          (base_value
+            (prefixed_string))
+          (path_element
+            (subscript
+              (identifier)
+              (argument_list))))))
+    (semi_colon)
+    (expression
+      (value
+        (path
+          (base_value
+            (prefixed_string))
+          (path_element
+            (subscript
+              (identifier)
+              (argument_list
+                (value
+                  (base_value
+                    (prefixed_string)))))))))
+    (semi_colon)))
+
+==================
+Remove API And Bucket
+==================
+
+REMOVE API '/api';
+REMOVE BUCKET 'bucket';
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (remove_statement
+          (keyword_remove)
+          (keyword_api)
+          (value
+            (base_value
+              (string))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (remove_statement
+          (keyword_remove)
+          (keyword_bucket)
+          (value
+            (base_value
+              (string))))))
+    (semi_colon)))

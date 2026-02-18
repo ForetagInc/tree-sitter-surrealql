@@ -99,6 +99,7 @@ export default grammar({
 		keyword_namespace: (_) => make_keyword('NAMESPACE'),
 		keyword_param: (_) => make_keyword('PARAM'),
 		keyword_scope: (_) => make_keyword('SCOPE'),
+		keyword_api: (_) => make_keyword('API'),
 		keyword_drop: (_) => make_keyword('DROP'),
 		keyword_schemafull: (_) => make_keyword('SCHEMAFULL'),
 		keyword_schemaless: (_) => make_keyword('SCHEMALESS'),
@@ -160,7 +161,10 @@ export default grammar({
 		keyword_filters: (_) => make_keyword('FILTERS'),
 		keyword_when: (_) => make_keyword('WHEN'),
 		keyword_then: (_) => make_keyword('THEN'),
+		keyword_middleware: (_) => make_keyword('MIDDLEWARE'),
 		keyword_type: (_) => make_keyword('TYPE'),
+		keyword_module: (_) => make_keyword('MODULE'),
+		keyword_backend: (_) => make_keyword('BACKEND'),
 		keyword_default: (_) => make_keyword('DEFAULT'),
 		keyword_assert: (_) => make_keyword('ASSERT'),
 		keyword_permissions: (_) => make_keyword('PERMISSIONS'),
@@ -276,6 +280,9 @@ export default grammar({
 				$.define_param_statement,
 				$.define_scope_statement,
 				$.define_access_statement,
+				$.define_api_statement,
+				$.define_module_statement,
+				$.define_bucket_statement,
 				$.define_table_statement,
 				$.define_token_statement,
 				$.define_user_statement,
@@ -531,6 +538,39 @@ export default grammar({
 				optional($.duration_clause),
 			),
 
+		define_api_statement: ($) =>
+			seq(
+				$.keyword_define,
+				$.keyword_api,
+				optional(choice($.if_not_exists_clause, $.keyword_overwrite)),
+				$.value,
+				optional($.api_for_clause),
+				optional($.api_middleware_clause),
+				optional($.api_then_clause),
+				optional($.permissions_expression_clause),
+			),
+
+		define_module_statement: ($) =>
+			seq(
+				$.keyword_define,
+				$.keyword_module,
+				optional(choice($.if_not_exists_clause, $.keyword_overwrite)),
+				$.module_name,
+				$.keyword_as,
+				choice($.string, $.prefixed_string),
+			),
+
+		define_bucket_statement: ($) =>
+			seq(
+				$.keyword_define,
+				$.keyword_bucket,
+				optional(choice($.if_not_exists_clause, $.keyword_overwrite)),
+				$.identifier,
+				optional($.bucket_backend_clause),
+				optional($.permissions_expression_clause),
+				optional($.comment_clause),
+			),
+
 		access_record_jwt_clause: ($) =>
 			prec.left(
 				seq(
@@ -620,6 +660,12 @@ export default grammar({
 			seq(
 				$.keyword_remove,
 				choice(
+					seq($.keyword_api, optional($.if_exists_clause), $.value),
+					seq(
+						$.keyword_bucket,
+						optional($.if_exists_clause),
+						$.value,
+					),
 					seq(
 						$.keyword_namespace,
 						optional($.if_exists_clause),
@@ -986,6 +1032,37 @@ export default grammar({
 				commaSeparated(choice($.sub_query, $.block)),
 			),
 
+		api_for_clause: ($) => seq($.keyword_for, commaSeparated($.api_method)),
+
+		api_method: ($) =>
+			choice(
+				$.identifier,
+				$.keyword_create,
+				$.keyword_delete,
+				$.keyword_patch,
+				$.keyword_update,
+			),
+
+		api_middleware_clause: ($) =>
+			seq(
+				$.keyword_middleware,
+				commaSeparated(choice($.function_call, $.path)),
+			),
+
+		api_then_clause: ($) => seq($.keyword_then, $.block),
+
+		bucket_backend_clause: ($) =>
+			seq(
+				$.keyword_backend,
+				choice($.identifier, $.string, $.prefixed_string),
+			),
+
+		module_name: ($) =>
+			choice(
+				$.identifier,
+				seq($.identifier, repeat1(seq('::', $.identifier))),
+			),
+
 		type_object_content: ($) => commaSeparated($.type_object_property),
 
 		type_clause: ($) =>
@@ -1031,6 +1108,20 @@ export default grammar({
 			seq(
 				$.keyword_permissions,
 				choice($.keyword_none, $.keyword_full, $.where_clause),
+			),
+
+		permissions_expression_clause: ($) =>
+			prec(
+				1,
+				seq(
+					$.keyword_permissions,
+					choice(
+						$.keyword_none,
+						$.keyword_full,
+						$.where_clause,
+						$.value,
+					),
+				),
 			),
 
 		comment_clause: ($) => seq($.keyword_comment, $.string),
@@ -1403,7 +1494,7 @@ export default grammar({
 		// Lexical tokens
 		string: (_) => /'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"/,
 		prefixed_string: (_) =>
-			/[ruds](?:'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^'\\]*)*")/,
+			/[fruds](?:'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*")/,
 		number: ($) => choice($.int, $.float, $.decimal),
 		int: (_) => /-?[0-9]+/,
 		float: (_) => /-?[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?f?/,

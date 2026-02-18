@@ -242,3 +242,495 @@ REMOVE BUCKET 'bucket';
             (base_value
               (string))))))
     (semi_colon)))
+
+==================
+Define Field Computed Graph Arrow
+==================
+
+DEFINE FIELD OVERWRITE facilities ON organization
+	COMPUTED <~facility;
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (keyword_overwrite)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (computed_clause
+            (keyword_computed)
+            (value
+              (path
+                (graph_path
+                  (identifier))))))))
+    (semi_colon)))
+
+==================
+Select Tempfiles
+==================
+
+SELECT * FROM person ORDER BY name TEMPFILES;
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (select_statement
+          (select_clause
+            (keyword_select)
+            (inclusive_predicate))
+          (from_clause
+            (keyword_from)
+            (value
+              (base_value
+                (identifier)))
+            (order_clause
+              (keyword_order)
+              (keyword_by)
+              (order_criteria
+                (value
+                  (base_value
+                    (identifier)))))
+            (tempfiles_clause
+              (keyword_tempfiles))))))
+    (semi_colon)))
+
+==================
+Create Version Clause
+==================
+
+CREATE user:john SET name = 'John' VERSION d'2025-08-19T08:00:00Z';
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (create_statement
+          (keyword_create)
+          (create_target
+            (value
+              (base_value
+                (record_id
+                  (object_key)
+                  (record_id_value
+                    (record_id_ident))))))
+          (set_clause
+            (keyword_set)
+            (field_assignment
+              (identifier)
+              (assignment_operator)
+              (value
+                (base_value
+                  (string)))))
+          (version_clause
+            (keyword_version)
+            (value
+              (base_value
+                (prefixed_string)))))))
+    (semi_colon)))
+
+==================
+Define Field Reference Variants
+==================
+
+DEFINE FIELD comics ON person TYPE option<array<record<comic_book>>> REFERENCE;
+DEFINE FIELD borrowed_comics ON person TYPE option<array<record<comic_book>>> REFERENCE;
+DEFINE FIELD owned_by ON comic_book COMPUTED <~(person FIELD comics);
+DEFINE FIELD borrowed_by ON comic_book COMPUTED <~(person FIELD borrowed_comics);
+DEFINE FIELD all_readers ON comic_book COMPUTED <~(person FIELD comics borrowed_comics);
+
+DEFINE FIELD friends ON person TYPE option<array<record<person>>> REFERENCE ON DELETE IGNORE;
+DEFINE FIELD comments ON person TYPE option<array<record<comment>>> REFERENCE ON DELETE UNSET;
+DEFINE FIELD author ON comment TYPE record<person> REFERENCE ON DELETE CASCADE;
+DEFINE FIELD connected_to ON utility TYPE option<array<record<house>>> REFERENCE ON DELETE REJECT;
+DEFINE FIELD comments ON person TYPE option<array<record<comment>>> REFERENCE ON DELETE THEN {
+    UPDATE $this SET
+        deleted_comments += $reference,
+        comments -= $reference;
+};
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (computed_clause
+            (keyword_computed)
+            (value
+              (path
+                (graph_path
+                  (graph_reference_target
+                    (identifier)
+                    (keyword_field)
+                    (identifier)))))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (computed_clause
+            (keyword_computed)
+            (value
+              (path
+                (graph_path
+                  (graph_reference_target
+                    (identifier)
+                    (keyword_field)
+                    (identifier)))))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (computed_clause
+            (keyword_computed)
+            (value
+              (path
+                (graph_path
+                  (graph_reference_target
+                    (identifier)
+                    (keyword_field)
+                    (identifier)
+                    (identifier)))))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)
+            (reference_on_delete_clause
+              (keyword_on)
+              (keyword_delete)
+              (keyword_ignore))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)
+            (reference_on_delete_clause
+              (keyword_on)
+              (keyword_delete)
+              (keyword_unset))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (type_name)))))
+          (reference_clause
+            (keyword_reference)
+            (reference_on_delete_clause
+              (keyword_on)
+              (keyword_delete)
+              (keyword_cascade))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)
+            (reference_on_delete_clause
+              (keyword_on)
+              (keyword_delete)
+              (keyword_reject))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (define_field_statement
+          (keyword_define)
+          (keyword_field)
+          (inclusive_predicate
+            (predicate
+              (value
+                (base_value
+                  (identifier)))))
+          (on_table_clause
+            (keyword_on)
+            (identifier))
+          (type_clause
+            (keyword_type)
+            (type
+              (parameterized_type
+                (type_name)
+                (type
+                  (parameterized_type
+                    (type_name)
+                    (type
+                      (parameterized_type
+                        (type_name)
+                        (type
+                          (type_name)))))))))
+          (reference_clause
+            (keyword_reference)
+            (reference_on_delete_clause
+              (keyword_on)
+              (keyword_delete)
+              (keyword_then)
+              (block
+                (expressions
+                  (expression
+                    (subquery_statement
+                      (update_statement
+                        (keyword_update)
+                        (value
+                          (base_value
+                            (variable_name)))
+                        (set_clause
+                          (keyword_set)
+                          (field_assignment
+                            (identifier)
+                            (assignment_operator)
+                            (value
+                              (base_value
+                                (variable_name))))
+                          (field_assignment
+                            (identifier)
+                            (assignment_operator)
+                            (value
+                              (base_value
+                                (variable_name))))))))
+                  (semi_colon))))))))
+    (semi_colon)))
+
+==================
+Select Version Clause
+==================
+
+SELECT * FROM person VERSION d'2025-08-19T08:00:00Z';
+SELECT * FROM person ORDER BY name TEMPFILES VERSION d'2025-08-19T08:00:00Z';
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (select_statement
+          (select_clause
+            (keyword_select)
+            (inclusive_predicate))
+          (from_clause
+            (keyword_from)
+            (value
+              (base_value
+                (identifier)))
+            (version_clause
+              (keyword_version)
+              (value
+                (base_value
+                  (prefixed_string))))))))
+    (semi_colon)
+    (expression
+      (subquery_statement
+        (select_statement
+          (select_clause
+            (keyword_select)
+            (inclusive_predicate))
+          (from_clause
+            (keyword_from)
+            (value
+              (base_value
+                (identifier)))
+            (order_clause
+              (keyword_order)
+              (keyword_by)
+              (order_criteria
+                (value
+                  (base_value
+                    (identifier)))))
+            (tempfiles_clause
+              (keyword_tempfiles))
+            (version_clause
+              (keyword_version)
+              (value
+                (base_value
+                  (prefixed_string))))))))
+    (semi_colon)))

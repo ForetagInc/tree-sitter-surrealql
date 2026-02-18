@@ -163,6 +163,8 @@ export default grammar({
 		keyword_then: (_) => make_keyword('THEN'),
 		keyword_middleware: (_) => make_keyword('MIDDLEWARE'),
 		keyword_type: (_) => make_keyword('TYPE'),
+		keyword_tempfiles: (_) => make_keyword('TEMPFILES'),
+		keyword_version: (_) => make_keyword('VERSION'),
 		keyword_module: (_) => make_keyword('MODULE'),
 		keyword_backend: (_) => make_keyword('BACKEND'),
 		keyword_default: (_) => make_keyword('DEFAULT'),
@@ -170,6 +172,8 @@ export default grammar({
 		keyword_permissions: (_) => make_keyword('PERMISSIONS'),
 		keyword_relate: (_) => make_keyword('RELATE'),
 		keyword_ignore: (_) => make_keyword('IGNORE'),
+		keyword_cascade: (_) => make_keyword('CASCADE'),
+		keyword_reject: (_) => make_keyword('REJECT'),
 		keyword_values: (_) => make_keyword('VALUES'),
 		keyword_for: (_) => make_keyword('FOR'),
 		keyword_comment: (_) => make_keyword('COMMENT'),
@@ -417,6 +421,8 @@ export default grammar({
 					choice(
 						$.type_clause,
 						$.default_clause,
+						$.computed_clause,
+						$.reference_clause,
 						$.readonly_clause,
 						$.value_clause,
 						$.assert_clause,
@@ -753,6 +759,7 @@ export default grammar({
 				optional($.keyword_only),
 				$.create_target,
 				optional(choice($.content_clause, $.set_clause)),
+				optional($.version_clause),
 				optional($.return_clause),
 				optional($.timeout_clause),
 			),
@@ -937,10 +944,13 @@ export default grammar({
 					seq(
 						commaSeparated($.value),
 						optional($.with_clause),
+						optional($.version_clause),
 						optional($.where_clause),
 						optional($.split_clause),
 						optional($.group_clause),
 						optional($.order_clause),
+						optional($.tempfiles_clause),
+						optional($.version_clause),
 						optional($.limit_clause),
 						optional($.fetch_clause),
 						optional($.timeout_clause),
@@ -999,6 +1009,8 @@ export default grammar({
 
 		limit_clause: ($) => seq($.keyword_limit, $.number),
 		fetch_clause: ($) => seq($.keyword_fetch, commaSeparated($.identifier)),
+		tempfiles_clause: ($) => $.keyword_tempfiles,
+		version_clause: ($) => seq($.keyword_version, $.value),
 		timeout_clause: ($) => seq($.keyword_timeout, $.duration),
 		parallel_clause: ($) => $.keyword_parallel,
 		explain_clause: ($) => seq($.keyword_explain, optional($.keyword_full)),
@@ -1070,6 +1082,22 @@ export default grammar({
 
 		default_clause: ($) =>
 			seq($.keyword_default, optional($.keyword_always), $.value),
+
+		computed_clause: ($) => seq($.keyword_computed, $.value),
+		reference_clause: ($) =>
+			seq($.keyword_reference, optional($.reference_on_delete_clause)),
+		reference_on_delete_clause: ($) =>
+			seq(
+				$.keyword_on,
+				$.keyword_delete,
+				choice(
+					$.keyword_ignore,
+					$.keyword_unset,
+					$.keyword_cascade,
+					$.keyword_reject,
+					seq($.keyword_then, $.block),
+				),
+			),
 
 		readonly_clause: ($) => $.keyword_readonly,
 
@@ -1382,13 +1410,16 @@ export default grammar({
 
 		graph_path: ($) =>
 			seq(
-				choice('<-', '->', '<->'),
+				choice('<-', '->', '<->', '<~'),
 				choice(
 					$.identifier,
 					'?',
+					$.graph_reference_target,
 					seq('(', commaSeparated($.graph_predicate), ')'),
 				),
 			),
+		graph_reference_target: ($) =>
+			seq('(', $.identifier, $.keyword_field, repeat1($.identifier), ')'),
 
 		predicate: ($) =>
 			choice($.value, seq($.value, $.keyword_as, $.identifier)),

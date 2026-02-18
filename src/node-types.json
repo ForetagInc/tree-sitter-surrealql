@@ -579,6 +579,25 @@
     }
   },
   {
+    "type": "computed_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_computed",
+          "named": true
+        },
+        {
+          "type": "value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "content_clause",
     "named": true,
     "fields": {},
@@ -650,6 +669,10 @@
         },
         {
           "type": "timeout_clause",
+          "named": true
+        },
+        {
+          "type": "version_clause",
           "named": true
         }
       ]
@@ -1098,6 +1121,10 @@
           "named": true
         },
         {
+          "type": "computed_clause",
+          "named": true
+        },
+        {
           "type": "default_clause",
           "named": true
         },
@@ -1131,6 +1158,10 @@
         },
         {
           "type": "readonly_clause",
+          "named": true
+        },
+        {
+          "type": "reference_clause",
           "named": true
         },
         {
@@ -2125,11 +2156,19 @@
           "named": true
         },
         {
+          "type": "tempfiles_clause",
+          "named": true
+        },
+        {
           "type": "timeout_clause",
           "named": true
         },
         {
           "type": "value",
+          "named": true
+        },
+        {
+          "type": "version_clause",
           "named": true
         },
         {
@@ -2218,6 +2257,10 @@
           "named": true
         },
         {
+          "type": "graph_reference_target",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         }
@@ -2246,6 +2289,25 @@
         },
         {
           "type": "where_clause",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "graph_reference_target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "keyword_field",
           "named": true
         }
       ]
@@ -3636,6 +3698,68 @@
     }
   },
   {
+    "type": "reference_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_reference",
+          "named": true
+        },
+        {
+          "type": "reference_on_delete_clause",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "reference_on_delete_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "block",
+          "named": true
+        },
+        {
+          "type": "keyword_cascade",
+          "named": true
+        },
+        {
+          "type": "keyword_delete",
+          "named": true
+        },
+        {
+          "type": "keyword_ignore",
+          "named": true
+        },
+        {
+          "type": "keyword_on",
+          "named": true
+        },
+        {
+          "type": "keyword_reject",
+          "named": true
+        },
+        {
+          "type": "keyword_then",
+          "named": true
+        },
+        {
+          "type": "keyword_unset",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "relate_statement",
     "named": true,
     "fields": {},
@@ -4481,6 +4605,21 @@
     }
   },
   {
+    "type": "tempfiles_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_tempfiles",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "terms_cache_clause",
     "named": true,
     "fields": {},
@@ -5050,6 +5189,25 @@
     }
   },
   {
+    "type": "version_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_version",
+          "named": true
+        },
+        {
+          "type": "value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "when_then_clause",
     "named": true,
     "fields": {},
@@ -5232,6 +5390,10 @@
   },
   {
     "type": "<|",
+    "named": false
+  },
+  {
+    "type": "<~",
     "named": false
   },
   {
@@ -5436,6 +5598,10 @@
     "named": true
   },
   {
+    "type": "keyword_cascade",
+    "named": true
+  },
+  {
     "type": "keyword_changefeed",
     "named": true
   },
@@ -5461,6 +5627,10 @@
   },
   {
     "type": "keyword_commit",
+    "named": true
+  },
+  {
+    "type": "keyword_computed",
     "named": true
   },
   {
@@ -5932,7 +6102,15 @@
     "named": true
   },
   {
+    "type": "keyword_reference",
+    "named": true
+  },
+  {
     "type": "keyword_refresh",
+    "named": true
+  },
+  {
+    "type": "keyword_reject",
     "named": true
   },
   {
@@ -6032,6 +6210,10 @@
     "named": true
   },
   {
+    "type": "keyword_tempfiles",
+    "named": true
+  },
+  {
     "type": "keyword_terms_cache",
     "named": true
   },
@@ -6109,6 +6291,10 @@
   },
   {
     "type": "keyword_values",
+    "named": true
+  },
+  {
+    "type": "keyword_version",
     "named": true
   },
   {

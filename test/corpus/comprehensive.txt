@@ -2304,5 +2304,5 @@ LET $x = { name: "Alice", age: 30, };
                     (value
                       (base_value
                         (number
-                          (int)))))))))))))
+                          (int))))))))))))
     (semi_colon)))

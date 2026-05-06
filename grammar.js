@@ -1351,7 +1351,7 @@ export default grammar({
 		param_list: ($) =>
 			seq(
 				'(',
-				optional(commaSeparated(seq($.variable_name, ':', $.type))),
+				optional(commaSeparatedTrailing(seq($.variable_name, ':', $.type))),
 				')',
 			),
 
@@ -1703,7 +1703,7 @@ export default grammar({
 
 		version: ($) => seq('<', $.version_number, '>'),
 
-		argument_list: ($) => seq('(', optional(commaSeparated(choice($.closure, $.value))), ')'),
+		argument_list: ($) => seq('(', optional(commaSeparatedTrailing(choice($.closure, $.value))), ')'),
 
 		argument_list_count: ($) =>
 			seq(
@@ -1750,7 +1750,7 @@ export default grammar({
 			),
 
 		type_object: ($) =>
-			seq('{', commaSeparated($.type_object_property), '}'),
+			seq('{', commaSeparatedTrailing($.type_object_property), '}'),
 
 		type_object_property: ($) => seq($.object_key, ':', $.type),
 

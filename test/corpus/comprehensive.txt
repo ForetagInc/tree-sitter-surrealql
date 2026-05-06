@@ -2171,3 +2171,138 @@ INSERT INTO person { name: 'John', age: 30 };
                     (number
                       (int))))))))))
     (semi_colon)))
+
+==================
+Define Function Trailing Comma Params
+==================
+
+DEFINE FUNCTION fn::greet($name: string,) {
+    RETURN 'Hello';
+};
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_function_statement
+          (keyword_define)
+          (keyword_function)
+          (custom_function_name)
+          (param_list
+            (variable_name)
+            (type
+              (type_name)))
+          (block
+            (expressions
+              (expression
+                (subquery_statement
+                  (return_statement
+                    (return_clause
+                      (keyword_return)
+                      (value
+                        (base_value
+                          (string)))))))
+              (semi_colon))))))
+    (semi_colon)))
+
+==================
+Define Function Trailing Comma Multiple Params
+==================
+
+DEFINE FUNCTION fn::add($a: number, $b: number,) {
+    RETURN $a + $b;
+};
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_function_statement
+          (keyword_define)
+          (keyword_function)
+          (custom_function_name)
+          (param_list
+            (variable_name)
+            (type
+              (type_name))
+            (variable_name)
+            (type
+              (type_name)))
+          (block
+            (expressions
+              (expression
+                (subquery_statement
+                  (return_statement
+                    (return_clause
+                      (keyword_return)
+                      (value
+                        (binary_expression
+                          (value
+                            (base_value
+                              (variable_name)))
+                          (operator
+                            (binary_operator))
+                          (value
+                            (base_value
+                              (variable_name)))))))))
+              (semi_colon))))))
+    (semi_colon)))
+
+==================
+Function Call Trailing Comma Arguments
+==================
+
+fn::greet($name, $age,);
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (value
+        (function_call
+          (custom_function_name)
+          (argument_list
+            (value
+              (base_value
+                (variable_name)))
+            (value
+              (base_value
+                (variable_name)))))))
+    (semi_colon)))
+
+==================
+Object Trailing Comma Property
+==================
+
+LET $x = { name: "Alice", age: 30, };
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (let_statement
+          (keyword_let)
+          (variable_name)
+          (value
+            (base_value
+              (object
+                (object_content
+                  (object_property
+                    (object_key)
+                    (value
+                      (base_value
+                        (string))))
+                  (object_property
+                    (object_key)
+                    (value
+                      (base_value
+                        (number
+                          (int)))))))))))))
+    (semi_colon)))

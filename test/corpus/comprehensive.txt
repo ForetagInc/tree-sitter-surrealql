@@ -1735,6 +1735,34 @@ SELECT * FROM person WHERE !$active;
     (semi_colon)))
 
 ==================
+Negated Identifier Expression
+==================
+
+SELECT * FROM person WHERE !active;
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (select_statement
+          (select_clause
+            (keyword_select)
+            (inclusive_predicate))
+          (from_clause
+            (keyword_from)
+            (value
+              (base_value
+                (identifier)))
+            (where_clause
+              (keyword_where)
+              (value
+                (negated_expression
+                  (identifier))))))))
+    (semi_colon)))
+
+==================
 Multiple Statements
 ==================
 

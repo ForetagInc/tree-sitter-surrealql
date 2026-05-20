@@ -705,6 +705,43 @@ DEFINE EVENT audit ON user WHEN $event == "CREATE" THEN function() { return $val
     (semi_colon)))
 
 ==================
+Define Event With Async Then Block
+==================
+
+DEFINE EVENT OVERWRITE e ON TABLE file WHEN $event = 'DELETE' ASYNC THEN { };
+
+---
+
+(source_file
+  (expressions
+    (expression
+      (subquery_statement
+        (define_event_statement
+          (keyword_define)
+          (keyword_event)
+          (keyword_overwrite)
+          (identifier)
+          (on_table_clause
+            (keyword_on)
+            (keyword_table)
+            (identifier))
+          (when_then_clause
+            (keyword_when)
+            (value
+              (binary_expression
+                (value
+                  (base_value
+                    (variable_name)))
+                (operator)
+                (value
+                  (base_value
+                    (string)))))
+            (keyword_async)
+            (keyword_then)
+            (block))))))
+    (semi_colon)))
+
+==================
 Define API With Scripting Function Body
 ==================
 

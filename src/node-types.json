@@ -484,6 +484,10 @@
       "required": true,
       "types": [
         {
+          "type": "block",
+          "named": true
+        },
+        {
           "type": "operator",
           "named": true
         },
@@ -3328,7 +3332,7 @@
           "named": true
         },
         {
-          "type": "object",
+          "type": "value",
           "named": true
         }
       ]
@@ -3440,6 +3444,10 @@
       "types": [
         {
           "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         },
         {
@@ -3917,6 +3925,10 @@
       "required": true,
       "types": [
         {
+          "type": "argument_list",
+          "named": true
+        },
+        {
           "type": "destructure",
           "named": true
         },
@@ -4181,7 +4193,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "int",
@@ -4623,10 +4635,6 @@
       "required": true,
       "types": [
         {
-          "type": "if_statement",
-          "named": true
-        },
-        {
           "type": "keyword_after",
           "named": true
         },
@@ -4644,6 +4652,10 @@
         },
         {
           "type": "keyword_value",
+          "named": true
+        },
+        {
+          "type": "subquery_statement",
           "named": true
         },
         {
@@ -5973,6 +5985,10 @@
       "types": [
         {
           "type": "block",
+          "named": true
+        },
+        {
+          "type": "keyword_async",
           "named": true
         },
         {

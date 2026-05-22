@@ -4,6 +4,14 @@
 	"module": "index.ts",
 	"type": "module",
 	"private": true,
+	"scripts": {
+		"gen": "tree-sitter generate",
+		"build": "tree-sitter build",
+		"test": "tree-sitter test",
+		"parse": "tree-sitter parse",
+		"compare": "bun run compare.ts",
+		"qa": "biome format --write . && biome check --write ."
+	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
 		"@types/bun": "latest",

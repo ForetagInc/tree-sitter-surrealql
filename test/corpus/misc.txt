@@ -1,0 +1,757 @@
+=============================
+comments :: this is a comment
+=============================
+
+42
+
+---
+
+(SurrealQL
+  (Number
+    (Int)))
+
+========================
+comments :: Dash comment
+========================
+
+-- this is a comment
+42
+
+---
+
+(SurrealQL
+  (Comment)
+  (Number
+    (Int)))
+
+=========================
+comments :: Slash comment
+=========================
+
+// this is a comment
+42
+
+---
+
+(SurrealQL
+  (Comment)
+  (Number
+    (Int)))
+
+=========================
+comments :: Block comment
+=========================
+
+1 /* this is
+     a block
+     comment */ + 2
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (BlockComment)
+    (Operator)
+    (Number
+      (Int))))
+
+====================================
+comments :: Block comment standalone
+====================================
+
+/* block */ 42
+
+---
+
+(SurrealQL
+  (BlockComment)
+  (Number
+    (Int)))
+
+=====================================
+functions :: Namespaced function call
+=====================================
+
+a::b()
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList)))
+
+=================================
+functions :: Custom function call
+=================================
+
+fn::one::two(1, a)
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList
+      (Number
+        (Int))
+      (Ident))))
+
+==========================
+functions :: Rand function
+==========================
+
+rand(3)
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList
+      (Number
+        (Int)))))
+
+===========================
+functions :: Count function
+===========================
+
+count(x)
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList
+      (Ident))))
+
+====================================
+functions :: Versioned function call
+====================================
+
+some::versioned::function<1.2.3>(a)
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (Version
+      (VersionNumber))
+    (ArgumentList
+      (Ident))))
+
+======================================
+functions :: No-argument function call
+======================================
+
+a::b()
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList)))
+
+============================================
+functions :: Multiple argument function call
+============================================
+
+string::concat("hello", " ", "world")
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (FunctionName)
+    (ArgumentList
+      (String)
+      (String)
+      (String))))
+
+===================================
+functions :: Variable function call
+===================================
+
+$func(1)
+
+---
+
+(SurrealQL
+  (FunctionCall
+    (VariableName)
+    (ArgumentList
+      (Number
+        (Int)))))
+
+==============================
+identifiers :: Raw identifiers
+==============================
+
+theVar;
+theVar2
+
+---
+
+(SurrealQL
+  (Ident)
+  (Ident))
+
+=============================================================
+identifiers :: Keywords used as identifiers in field position
+=============================================================
+
+create bla set true = 1, false = 2, null = 3, none = 4
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int)))
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int)))
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int)))
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+===========================================
+javascript :: JavaScript function with args
+===========================================
+
+function(123, 1d2h) {
+	const number = 123;
+	if (test("{")) {
+		return number.toString();
+	}
+}
+
+---
+
+(SurrealQL
+  (FunctionJs
+    (FunctionName)
+    (ArgumentList
+      (Number
+        (Int))
+      (Duration
+        (DurationPart)
+        (DurationPart)))
+    (JavaScriptBlock
+      (BraceOpen)
+      (JavaScriptContent)
+      (BraceClose))))
+
+========================================
+javascript :: Simple JavaScript function
+========================================
+
+function() {
+	return 42;
+}
+
+---
+
+(SurrealQL
+  (FunctionJs
+    (FunctionName)
+    (ArgumentList)
+    (JavaScriptBlock
+      (BraceOpen)
+      (JavaScriptContent)
+      (BraceClose))))
+
+=====================
+operators :: Addition
+=====================
+
+1 + 2
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+========================
+operators :: Subtraction
+========================
+
+5 - 3
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+===========================
+operators :: Multiplication
+===========================
+
+2 * 3
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+=====================
+operators :: Division
+=====================
+
+10 / 2
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+==================
+operators :: Power
+==================
+
+2 ** 3
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+=====================
+operators :: Equality
+=====================
+
+a == b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+=======================
+operators :: Inequality
+=======================
+
+a != b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+======================
+operators :: Less than
+======================
+
+a < b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+=========================
+operators :: Greater than
+=========================
+
+a > b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+===============================
+operators :: Less than or equal
+===============================
+
+a <= b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+==================================
+operators :: Greater than or equal
+==================================
+
+a >= b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+========================
+operators :: Logical AND
+========================
+
+a && b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+=======================
+operators :: Logical OR
+=======================
+
+a || b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+============================
+operators :: Null coalescing
+============================
+
+a ?? b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+===========================
+operators :: Elvis operator
+===========================
+
+a ?: b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+==========================================
+operators :: Unicode containment operators
+==========================================
+
+a ∈ z;
+x ∉ y;
+a ⊆ b
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident))
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident))
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+=========================================
+operators :: Keyword operator containsnot
+=========================================
+
+x containsnot y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+========================
+operators :: IS operator
+========================
+
+x IS y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+================================
+operators :: IN keyword operator
+================================
+
+x IN y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator
+      (Keyword))
+    (Ident)))
+
+========================
+operators :: Fuzzy match
+========================
+
+x ?= y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+======================
+operators :: All match
+======================
+
+x *= y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Ident)))
+
+===================================
+operators :: Unicode multiplication
+===================================
+
+2 × 3
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+=============================
+operators :: Unicode division
+=============================
+
+10 ÷ 2
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Number
+      (Int))
+    (Operator)
+    (Number
+      (Int))))
+
+===========================================
+operators :: Matches operator with distance
+===========================================
+
+x @1@ y
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator
+      (Number
+        (Int)))
+    (Ident)))
+
+==============================================
+operators :: Addition assignment in expression
+==============================================
+
+a += 1
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Number
+      (Int))))
+
+=================================================
+operators :: Subtraction assignment in expression
+=================================================
+
+a -= 1
+
+---
+
+(SurrealQL
+  (BinaryExpression
+    (Ident)
+    (Operator)
+    (Number
+      (Int))))
+
+=============================
+parameters :: Simple variable
+=============================
+
+$name
+
+---
+
+(SurrealQL
+  (VariableName))
+
+======================================
+parameters :: Variable with underscore
+======================================
+
+$my_var
+
+---
+
+(SurrealQL
+  (VariableName))
+
+===================================
+parameters :: Variable with numbers
+===================================
+
+$var123
+
+---
+
+(SurrealQL
+  (VariableName))
+
+==================================
+subqueries :: Subquery with select
+==================================
+
+(SELECT * FROM test)
+
+---
+
+(SurrealQL
+  (SubQuery
+    (SelectStatement
+      (Keyword)
+      (Fields
+        (Any))
+      (Keyword)
+      (Ident))))
+
+=================================
+subqueries :: Subquery with value
+=================================
+
+(1 + 2)
+
+---
+
+(SurrealQL
+  (SubQuery
+    (BinaryExpression
+      (Number
+        (Int))
+      (Operator)
+      (Number
+        (Int)))))
+
+==================================
+subqueries :: Subquery with create
+==================================
+
+(CREATE test)
+
+---
+
+(SurrealQL
+  (SubQuery
+    (CreateStatement
+      (Keyword)
+      (Ident))))

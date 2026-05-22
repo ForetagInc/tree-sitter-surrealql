@@ -1,281 +1,55 @@
-[
-  (keyword_access)
-  (keyword_after)
-  (keyword_algorithm)
-  (keyword_all)
-  (keyword_all_inside)
-  (keyword_alter)
-  (keyword_always)
-  (keyword_analyzer)
-  (keyword_and)
-  (keyword_any)
-  (keyword_any_inside)
-  (keyword_api)
-  (keyword_as)
-  (keyword_asc)
-  (keyword_assert)
-  (keyword_async)
-  (keyword_at)
-  (keyword_authenticate)
-  (keyword_auto)
-  (keyword_backend)
-  (keyword_batch)
-  (keyword_bearer)
-  (keyword_before)
-  (keyword_begin)
-  (keyword_bm25)
-  (keyword_break)
-  (keyword_bucket)
-  (keyword_by)
-  (keyword_cancel)
-  (keyword_capacity)
-  (keyword_cascade)
-  (keyword_changefeed)
-  (keyword_changes)
-  (keyword_chebyshev)
-  (keyword_collate)
-  (keyword_columns)
-  (keyword_comment)
-  (keyword_commit)
-  (keyword_computed)
-  (keyword_config)
-  (keyword_contains)
-  (keyword_contains_all)
-  (keyword_contains_any)
-  (keyword_contains_none)
-  (keyword_contains_not)
-  (keyword_content)
-  (keyword_continue)
-  (keyword_cosine)
-  (keyword_count)
-  (keyword_create)
-  (keyword_database)
-  (keyword_db)
-  (keyword_default)
-  (keyword_define)
-  (keyword_delete)
-  (keyword_desc)
-  (keyword_diff)
-  (keyword_dimension)
-  (keyword_dist)
-  (keyword_doc_ids_cache)
-  (keyword_doc_ids_order)
-  (keyword_doc_lengths_cache)
-  (keyword_doc_lengths_order)
-  (keyword_drop)
-  (keyword_duration)
-  (keyword_eddsa)
-  (keyword_editor)
-  (keyword_efc)
-  (keyword_else)
-  (keyword_end)
-  (keyword_enforced)
-  (keyword_es256)
-  (keyword_es384)
-  (keyword_es512)
-  (keyword_euclidean)
-  (keyword_event)
-  (keyword_exclude)
-  (keyword_exists)
-  (keyword_expired)
-  (keyword_explain)
-  (keyword_false)
-  (keyword_fetch)
-  (keyword_field)
-  (keyword_fields)
-  (keyword_filters)
-  (keyword_flexible)
-  (keyword_for)
-  (keyword_from)
-  (keyword_full)
-  (keyword_function)
-  (keyword_functions)
-  (keyword_future)
-  (keyword_grant)
-  (keyword_graphql)
-  (keyword_group)
-  (keyword_hamming)
-  (keyword_highlights)
-  (keyword_hnsw)
-  (keyword_hs256)
-  (keyword_hs384)
-  (keyword_hs512)
-  (keyword_if)
-  (keyword_ignore)
-  (keyword_in)
-  (keyword_include)
-  (keyword_index)
-  (keyword_info)
-  (keyword_insert)
-  (keyword_inside)
-  (keyword_intersects)
-  (keyword_into)
-  (keyword_is)
-  (keyword_issuer)
-  (keyword_jaccard)
-  (keyword_jwks)
-  (keyword_jwt)
-  (keyword_key)
-  (keyword_kill)
-  (keyword_let)
-  (keyword_limit)
-  (keyword_live)
-  (keyword_m)
-  (keyword_manhattan)
-  (keyword_matches)
-  (keyword_merge)
-  (keyword_middleware)
-  (keyword_minkowski)
-  (keyword_module)
-  (keyword_mtree)
-  (keyword_namespace)
-  (keyword_no_index)
-  (keyword_none)
-  (keyword_none_inside)
-  (keyword_normal)
-  (keyword_not)
-  (keyword_not_inside)
-  (keyword_ns)
-  (keyword_null)
-  (keyword_numeric)
-  (keyword_omit)
-  (keyword_on)
-  (keyword_on_duplicate_key_update)
-  (keyword_only)
-  (keyword_option)
-  (keyword_or)
-  (keyword_order)
-  (keyword_original)
-  (keyword_out)
-  (keyword_outside)
-  (keyword_overwrite)
-  (keyword_owner)
-  (keyword_parallel)
-  (keyword_param)
-  (keyword_password)
-  (keyword_password_hash)
-  (keyword_patch)
-  (keyword_pearson)
-  (keyword_permissions)
-  (keyword_postings_cache)
-  (keyword_postings_order)
-  (keyword_ps256)
-  (keyword_ps384)
-  (keyword_ps512)
-  (keyword_purge)
-  (keyword_rand)
-  (keyword_readonly)
-  (keyword_rebuild)
-  (keyword_record)
-  (keyword_reference)
-  (keyword_refresh)
-  (keyword_reject)
-  (keyword_relate)
-  (keyword_relation)
-  (keyword_remove)
-  (keyword_replace)
-  (keyword_return)
-  (keyword_revoke)
-  (keyword_revoked)
-  (keyword_roles)
-  (keyword_root)
-  (keyword_rs256)
-  (keyword_rs384)
-  (keyword_rs512)
-  (keyword_schemafull)
-  (keyword_schemaless)
-  (keyword_scope)
-  (keyword_search)
-  (keyword_select)
-  (keyword_sequence)
-  (keyword_session)
-  (keyword_set)
-  (keyword_show)
-  (keyword_signin)
-  (keyword_signup)
-  (keyword_since)
-  (keyword_sleep)
-  (keyword_split)
-  (keyword_start)
-  (keyword_table)
-  (keyword_tables)
-  (keyword_tempfiles)
-  (keyword_terms_cache)
-  (keyword_terms_order)
-  (keyword_then)
-  (keyword_throw)
-  (keyword_timeout)
-  (keyword_to)
-  (keyword_token)
-  (keyword_tokenizers)
-  (keyword_transaction)
-  (keyword_true)
-  (keyword_type)
-  (keyword_unique)
-  (keyword_unset)
-  (keyword_update)
-  (keyword_upsert)
-  (keyword_url)
-  (keyword_use)
-  (keyword_user)
-  (keyword_value)
-  (keyword_values)
-  (keyword_version)
-  (keyword_viewer)
-  (keyword_when)
-  (keyword_where)
-  (keyword_with)
-] @keyword
+; tree-sitter-surrealql highlight queries
+; Node names mirror @surrealdb/lezer (PascalCase) — see grammar.js for the
+; complete set of nodes.
 
-[
-  (keyword_none)
-] @constant.builtin
+; Keywords and literals
+(Keyword) @keyword
+(Bool) @constant.builtin.boolean
+(None) @constant.builtin
+(Literal) @constant.builtin
 
-(reference_on_delete_clause
-  (keyword_on) @constant.builtin
-  (keyword_delete) @constant.builtin)
+; Identifiers
+(Ident) @variable
+(VariableName) @variable
+(RecordTbIdent) @type
+(RecordIdIdent) @constant
+(KeyName) @property
+(TypeName) @type
+(FunctionName) @function
 
-(reference_on_delete_clause
-  [
-    (keyword_ignore)
-    (keyword_unset)
-    (keyword_cascade)
-    (keyword_reject)
-  ] @keyword)
+; Strings, numbers, regex
+(String) @string
+(FormatString) @string.special
+(Regex) @string.regex
+(Int) @number
+(Float) @number.float
+(Decimal) @number
+(VersionNumber) @number
+(Duration) @number
+(DurationPart) @number
 
-(reference_on_delete_clause
-  (keyword_then) @keyword.control)
+; Comments
+(Comment) @comment
+(BlockComment) @comment.block
 
-(assert_clause
-  (keyword_assert) @keyword)
+; Operators / punctuation
+(Operator) @operator
+(RangeOp) @operator
+(LookupRight) @operator
+(LookupLeft) @operator
+(LookupBoth) @operator
+(Pipe) @punctuation.special
+(Colon) @punctuation.delimiter
+(BraceOpen) @punctuation.bracket
+(BraceClose) @punctuation.bracket
+(Any) @operator
+(At) @operator
+(Optional) @operator
 
-(function_call
-  (builtin_function_name) @function.builtin)
-
-(function_call
-  (custom_function_name) @function)
-
-(function_call
-  (function_name) @function)
-
-(scripting_function
-  (keyword_function) @keyword.function)
-
-(scripting_function
-  (keyword_async) @keyword.coroutine)
-
-(scripting_function
-  (js_function_body) @embedded)
-
-(access_statement
-  [
-    (keyword_grant)
-    (keyword_show)
-    (keyword_revoke)
-    (keyword_purge)
-  ] @keyword)
-
-(define_sequence_statement
-  (keyword_sequence) @keyword)
-
-(variable_name) @variable.parameter
+; Token / clause keywords aliased through Distance / Filter / Tokenizer / etc.
+(Distance) @constant.builtin
+(Filter) @constant.builtin
+(AnalyzerTokenizer) @constant.builtin
+(TokenType) @constant.builtin
+(HttpMethod) @constant.builtin
+(IndexTypeClause) @type

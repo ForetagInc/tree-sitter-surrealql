@@ -13,7 +13,6 @@ Tree-sitter grammar for [SurrealQL](https://surrealdb.com/docs/surrealql), built
 - [`compare.ts`](compare.ts) — diff a SurrealQL file against the lezer parser
 - [`run-corpus.ts`](run-corpus.ts) — run the lezer test corpus through both parsers and report mismatches
 - [`gen-corpus.ts`](gen-corpus.ts) — regenerate `test/corpus/*.txt` from lezer's expected trees
-- [`LEZER_ISSUES.md`](LEZER_ISSUES.md) — catalog of inconsistencies / unsupported constructs found in the lezer grammar
 
 ## Status
 

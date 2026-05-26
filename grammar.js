@@ -1778,19 +1778,23 @@ export default grammar({
 
 		Int: ($) => token(/[0-9]+/),
 
-		Float: ($) =>
+	Float: ($) =>
 			token(
-				choice(
-					seq(
-						/[0-9]+/,
-						choice(
-							seq('.', /[0-9]+/, optional(/[eE][+-]?[0-9]+/)),
-							/[eE][+-]?[0-9]+/,
+				prec(
+					1,
+					choice(
+						seq(/[0-9]+/, 'f'),
+						seq(
+							/[0-9]+/,
+							choice(
+								seq('.', /[0-9]+/, optional(/[eE][+-]?[0-9]+/)),
+								/[eE][+-]?[0-9]+/,
+							),
+							optional('f'),
 						),
-						optional('f'),
+						'Infinity',
+						'NaN',
 					),
-					'Infinity',
-					'NaN',
 				),
 			),
 

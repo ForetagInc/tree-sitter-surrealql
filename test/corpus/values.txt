@@ -1290,6 +1290,22 @@ numbers :: Float with f suffix
   (Number
     (Float)))
 
+=====================================
+numbers :: Float with bare f suffix
+=====================================
+
+LET $n = 1f;
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName))
+    (Number
+      (Float))))
+
 ===============================
 numbers :: Float special values
 ===============================

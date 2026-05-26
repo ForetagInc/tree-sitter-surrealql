@@ -3790,7 +3790,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "PipedRecordId"
+                  "name": "RangeRecordId"
                 }
               ]
             },
@@ -3824,7 +3824,7 @@
                       },
                       {
                         "type": "SYMBOL",
-                        "name": "PipedRecordId"
+                        "name": "RangeRecordId"
                       }
                     ]
                   }
@@ -9551,7 +9551,7 @@
         }
       ]
     },
-    "PipedRecordId": {
+    "RangeRecordId": {
       "type": "SEQ",
       "members": [
         {

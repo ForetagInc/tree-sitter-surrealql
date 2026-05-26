@@ -746,7 +746,7 @@ export default grammar({
 						$.VariableName,
 						$.FunctionCall,
 						$.RecordId,
-						$.PipedRecordId,
+						$.RangeRecordId,
 					),
 				),
 				optional(choice($.ContentClause, $.SetClause, $.UnsetClause)),
@@ -1632,7 +1632,7 @@ export default grammar({
 				$.Colon,
 				choice($._recordIdValue, $.RecordIdRange),
 			),
-		PipedRecordId: ($) => seq($.Pipe, $.RecordId, $.Pipe),
+		RangeRecordId: ($) => seq($.Pipe, $.RecordId, $.Pipe),
 		_idName: ($) => choice($._rawident, $._tickIdent, $._bracketIdent),
 		RecordIdIdent: ($) =>
 			choice($._numberident, $._tickIdent, $._bracketIdent),

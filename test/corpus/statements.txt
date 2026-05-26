@@ -347,7 +347,7 @@ CREATE person:tobie
       (RecordIdIdent))))
 
 ======================================================
-create :: Create with piped record ID range target
+create :: Create with range record ID target
 ======================================================
 
 CREATE |node:1..10|
@@ -357,7 +357,7 @@ CREATE |node:1..10|
 (SurrealQL
   (CreateStatement
     (Keyword)
-    (PipedRecordId
+    (RangeRecordId
       (Pipe)
       (RecordId
         (RecordTbIdent)

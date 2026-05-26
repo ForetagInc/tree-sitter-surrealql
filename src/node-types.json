@@ -1557,7 +1557,7 @@
           "named": true
         },
         {
-          "type": "PipedRecordId",
+          "type": "RangeRecordId",
           "named": true
         },
         {
@@ -5535,25 +5535,6 @@
     "fields": {}
   },
   {
-    "type": "PipedRecordId",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "Pipe",
-          "named": true
-        },
-        {
-          "type": "RecordId",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "Point",
     "named": true,
     "fields": {},
@@ -5824,6 +5805,25 @@
     "type": "RangeOp",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "RangeRecordId",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Pipe",
+          "named": true
+        },
+        {
+          "type": "RecordId",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "ReadonlyClause",

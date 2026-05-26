@@ -14,6 +14,50 @@ export default grammar({
 		[$.record_id_value, $.range],
 		[$.record_id_value, $.record_id_func],
 		[$.identifier, $.record_id_escaped],
+		[$.value, $.path],
+		[$.path],
+		[$.type_clause],
+		[$.create_statement],
+		[$.update_statement],
+		[$.upsert_statement],
+		[$.delete_statement],
+		[$.insert_statement],
+		[$.relate_statement],
+		[$.select_statement],
+		[$.live_select_statement],
+		[$.live_select_diff_statement],
+		[$.define_sequence_statement],
+		[$.define_event_statement],
+		[$.define_field_statement],
+		[$.define_function_statement],
+		[$.define_index_statement],
+		[$.define_namespace_statement],
+		[$.define_param_statement],
+		[$.define_access_statement],
+		[$.define_table_statement],
+		[$.define_user_statement],
+		[$.define_analyzer_statement],
+		[$.define_database_statement],
+		[$.define_scope_statement],
+		[$.define_token_statement],
+		[$.define_api_statement],
+		[$.define_module_statement],
+		[$.define_bucket_statement],
+		[$.define_config_statement],
+		[$.remove_statement],
+		[$.alter_statement],
+		[$.show_statement],
+		[$.access_statement],
+		[$.for_statement],
+		[$.if_statement],
+		[$.let_statement],
+		[$.return_statement],
+		[$.rebuild_index_statement],
+		[$.from_clause],
+		[$.base_value, $.negated_expression],
+		[$.path, $.negated_expression],
+		[$.scripting_function],
+		[$.when_then_clause, $.scripting_function],
 	],
 
 	rules: {
@@ -255,7 +299,7 @@ export default grammar({
 		keyword_original: (_) => make_keyword('ORIGINAL'),
 		keyword_sequence: (_) => make_keyword('SEQUENCE'),
 		keyword_all: (_) => make_keyword('ALL'),
-		keyword_async: (_) => token(prec(1, 'async')),
+		keyword_async: (_) => make_keyword('ASYNC'),
 		keyword_batch: (_) => make_keyword('BATCH'),
 		keyword_expired: (_) => make_keyword('EXPIRED'),
 		keyword_purge: (_) => make_keyword('PURGE'),
@@ -1234,6 +1278,7 @@ export default grammar({
 		when_then_clause: ($) =>
 			seq(
 				optional(seq($.keyword_when, $.value)),
+				optional($.keyword_async),
 				optional($.keyword_then),
 				commaSeparated(choice($.sub_query, $.block, $.scripting_function)),
 			),
@@ -1272,7 +1317,12 @@ export default grammar({
 		type_object_content: ($) => commaSeparated($.type_object_property),
 
 		type_clause: ($) =>
-			seq(optional($.keyword_flexible), $.keyword_type, $.type),
+			seq(
+				optional($.keyword_flexible),
+				$.keyword_type,
+				$.type,
+				optional($.keyword_flexible),
+			),
 
 		default_clause: ($) =>
 			seq($.keyword_default, optional($.keyword_always), choice($.block, $.value)),
@@ -1514,11 +1564,8 @@ export default grammar({
 					$.keyword_before,
 					$.keyword_after,
 					$.keyword_diff,
-					choice(
-						seq(optional($.keyword_value), commaSeparated($.value)),
-						commaSeparated($.value),
-					),
-					$.if_statement,
+					prec.right(1, $.subquery_statement),
+					seq(optional($.keyword_value), commaSeparated($.value)),
 				),
 			),
 
@@ -1531,7 +1578,7 @@ export default grammar({
 				$.record_id,
 			),
 
-		merge_clause: ($) => seq($.keyword_merge, $.object),
+		merge_clause: ($) => seq($.keyword_merge, $.value),
 
 		patch_clause: ($) => seq($.keyword_patch, $.array),
 
@@ -1608,12 +1655,19 @@ export default grammar({
 
 		cast_expression: ($) => prec.left(seq('<', $.type_name, '>', $.value)),
 
-		binary_expression: ($) => prec.left(1, seq($.value, $.operator, $.value)),
+		binary_expression: ($) =>
+			prec.left(1, seq($.value, $.operator, choice($.value, $.block))),
 
 		negated_expression: ($) =>
 			seq(
 				'!',
-				choice($.variable_name, $.function_call, $.record_id, $.path),
+				choice(
+					$.variable_name,
+					$.identifier,
+					$.function_call,
+					$.record_id,
+					$.path,
+				),
 			),
 
 
@@ -1649,7 +1703,8 @@ export default grammar({
 				seq($.graph_path, repeat($.path_element)),
 			),
 
-		path_element: ($) => choice($.graph_path, $.subscript, $.filter, $.destructure),
+		path_element: ($) =>
+			choice($.graph_path, $.subscript, $.filter, $.destructure, $.argument_list),
 
 		destructure: ($) =>
 			seq('.', '{', commaSeparated($.destructure_field), '}'),
@@ -1786,9 +1841,9 @@ export default grammar({
 		prefixed_string: (_) =>
 			/[fruds](?:'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*")/,
 		number: ($) => choice($.int, $.float, $.decimal),
-		int: (_) => /-?[0-9]+/,
-		float: (_) => /-?[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?f?/,
-		decimal: (_) => /-?[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?dec/,
+		int: (_) => /-?[0-9][0-9_]*/,
+		float: (_) => /-?[0-9][0-9_]*\.[0-9][0-9_]*([eE][+-]?[0-9]+)?f?/,
+		decimal: (_) => /-?[0-9][0-9_]*\.[0-9][0-9_]*([eE][+-]?[0-9]+)?dec/,
 		variable_name: (_) => /\$[a-zA-Z_][a-zA-Z0-9_]*/,
 		_word: (_) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 		identifier: ($) =>
@@ -1858,7 +1913,15 @@ export default grammar({
 		duration: ($) => repeat1($.duration_part),
 		duration_part: (_) => /[0-9]+\s*(ns|us|µs|ms|s|m|h|d|w|y)/,
 		point: ($) => seq('(', $.float, ',', $.float, ')'),
-		range: ($) => seq($.int, '..', optional('='), $.int),
+		range: ($) =>
+			prec.right(
+				choice(
+					seq($.int, '..', optional('='), $.int),
+					seq($.int, '..'),
+					seq('..', optional('='), $.int),
+					'..',
+				),
+			),
 
 		operator: ($) =>
 			choice(

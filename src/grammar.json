@@ -919,6 +919,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "_subqueryStatement"
+            },
+            {
+              "type": "SYMBOL",
               "name": "Block"
             }
           ]
@@ -3783,6 +3787,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "RecordId"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "PipedRecordId"
                 }
               ]
             },
@@ -3813,6 +3821,10 @@
                       {
                         "type": "SYMBOL",
                         "name": "RecordId"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "PipedRecordId"
                       }
                     ]
                   }
@@ -8893,7 +8905,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "Number"
+                "name": "Int"
               },
               {
                 "type": "SYMBOL",
@@ -8901,7 +8913,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "Number"
+                "name": "Int"
               }
             ]
           },
@@ -8910,24 +8922,11 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "Number"
+                "name": "Int"
               },
               {
                 "type": "SYMBOL",
                 "name": "RangeOp"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "RangeOp"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "Number"
               }
             ]
           },
@@ -8936,8 +8935,21 @@
             "name": "RangeOp"
           },
           {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "RangeOp"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "Int"
+              }
+            ]
+          },
+          {
             "type": "SYMBOL",
-            "name": "Number"
+            "name": "Int"
           }
         ]
       }
@@ -9536,6 +9548,23 @@
               "name": "RecordIdRange"
             }
           ]
+        }
+      ]
+    },
+    "PipedRecordId": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "Pipe"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "RecordId"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "Pipe"
         }
       ]
     },
@@ -13734,6 +13763,9 @@
     [
       "RecordId",
       "RecordIdRange"
+    ],
+    [
+      "WhereClause"
     ]
   ],
   "precedences": [

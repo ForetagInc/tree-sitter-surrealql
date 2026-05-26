@@ -1047,9 +1047,43 @@ a:b.{1}
       (Recurse
         (BraceOpen)
         (RecurseRange
-          (Number
-            (Int)))
+          (Int))
         (BraceClose)))))
+
+===============================================
+idioms :: Recurse with collect and inclusive
+===============================================
+
+RETURN a:1.{..+collect+inclusive}(->edge->a[?bool]);
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (Path
+      (RecordId
+        (RecordTbIdent)
+        (Colon)
+        (RecordIdIdent))
+      (Subscript
+        (Recurse
+          (BraceOpen)
+          (RecurseRange
+            (RangeOp))
+          (RecurseOptions
+            (FunctionName)
+            (FunctionName))
+          (BraceClose)
+          (Lookup
+            (LookupRight)
+            (Ident))
+          (Lookup
+            (LookupRight)
+            (Ident))
+          (Filter
+            (WhereClause
+              (Ident))))))))
 
 ================================
 idioms :: Recurse with min range
@@ -1069,8 +1103,7 @@ a:b.{1..}
       (Recurse
         (BraceOpen)
         (RecurseRange
-          (Number
-            (Int))
+          (Int)
           (RangeOp))
         (BraceClose)))))
 
@@ -1092,11 +1125,9 @@ a:b.{1..2}
       (Recurse
         (BraceOpen)
         (RecurseRange
-          (Number
-            (Int))
+          (Int)
           (RangeOp)
-          (Number
-            (Int)))
+          (Int))
         (BraceClose)))))
 
 ================================
@@ -1118,8 +1149,7 @@ a:b.{..2}
         (BraceOpen)
         (RecurseRange
           (RangeOp)
-          (Number
-            (Int)))
+          (Int))
         (BraceClose)))))
 
 =====================================

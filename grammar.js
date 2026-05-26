@@ -70,7 +70,7 @@ export default grammar({
 		['range', 'method', 'binary', 'union', 'filter', 'for', 'clause'],
 	],
 
-	conflicts: ($) => [[$.RecordId, $.RecordIdRange]],
+	conflicts: ($) => [[$.RecordId, $.RecordIdRange], [$.WhereClause]],
 
 	rules: {
 		// ================================================================
@@ -260,7 +260,13 @@ export default grammar({
 				alias($._kw_for, $.Keyword),
 				$.VariableName,
 				alias($._kw_in, $.Keyword),
-				choice($.Array, $.VariableName, $.SubQuery, $.Block),
+				choice(
+					$.Array,
+					$.VariableName,
+					$.SubQuery,
+					$._subqueryStatement,
+					$.Block,
+				),
 				$.Block,
 			),
 
@@ -735,7 +741,13 @@ export default grammar({
 				alias($._kw_create, $.Keyword),
 				optional(alias($._kw_only, $.Keyword)),
 				csep(
-					choice($.Ident, $.VariableName, $.FunctionCall, $.RecordId),
+					choice(
+						$.Ident,
+						$.VariableName,
+						$.FunctionCall,
+						$.RecordId,
+						$.PipedRecordId,
+					),
 				),
 				optional(choice($.ContentClause, $.SetClause, $.UnsetClause)),
 				optional($.ReturnClause),
@@ -1522,11 +1534,11 @@ export default grammar({
 		RecurseRange: ($) =>
 			prec.right(
 				choice(
-					seq($.Number, $.RangeOp, $.Number),
-					seq($.Number, $.RangeOp),
-					seq($.RangeOp, $.Number),
+					seq($.Int, $.RangeOp, $.Int),
+					seq($.Int, $.RangeOp),
 					$.RangeOp,
-					$.Number,
+					seq($.RangeOp, $.Int),
+					$.Int,
 				),
 			),
 		RecurseOptions: ($) =>
@@ -1620,6 +1632,7 @@ export default grammar({
 				$.Colon,
 				choice($._recordIdValue, $.RecordIdRange),
 			),
+		PipedRecordId: ($) => seq($.Pipe, $.RecordId, $.Pipe),
 		_idName: ($) => choice($._rawident, $._tickIdent, $._bracketIdent),
 		RecordIdIdent: ($) =>
 			choice($._numberident, $._tickIdent, $._bracketIdent),

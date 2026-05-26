@@ -1557,6 +1557,10 @@
           "named": true
         },
         {
+          "type": "PipedRecordId",
+          "named": true
+        },
+        {
           "type": "RecordId",
           "named": true
         },
@@ -2852,6 +2856,10 @@
       "required": true,
       "types": [
         {
+          "type": "AlterStatement",
+          "named": true
+        },
+        {
           "type": "Array",
           "named": true
         },
@@ -2860,11 +2868,63 @@
           "named": true
         },
         {
+          "type": "CreateStatement",
+          "named": true
+        },
+        {
+          "type": "DefineStatement",
+          "named": true
+        },
+        {
+          "type": "DeleteStatement",
+          "named": true
+        },
+        {
+          "type": "IfElseStatement",
+          "named": true
+        },
+        {
+          "type": "InsertStatement",
+          "named": true
+        },
+        {
           "type": "Keyword",
           "named": true
         },
         {
+          "type": "LetStatement",
+          "named": true
+        },
+        {
+          "type": "RebuildStatement",
+          "named": true
+        },
+        {
+          "type": "RelateStatement",
+          "named": true
+        },
+        {
+          "type": "RemoveStatement",
+          "named": true
+        },
+        {
+          "type": "ReturnStatement",
+          "named": true
+        },
+        {
+          "type": "SelectStatement",
+          "named": true
+        },
+        {
           "type": "SubQuery",
+          "named": true
+        },
+        {
+          "type": "UpdateStatement",
+          "named": true
+        },
+        {
+          "type": "UpsertStatement",
           "named": true
         },
         {
@@ -5475,6 +5535,25 @@
     "fields": {}
   },
   {
+    "type": "PipedRecordId",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Pipe",
+          "named": true
+        },
+        {
+          "type": "RecordId",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "Point",
     "named": true,
     "fields": {},
@@ -6026,7 +6105,7 @@
       "required": true,
       "types": [
         {
-          "type": "Number",
+          "type": "Int",
           "named": true
         },
         {

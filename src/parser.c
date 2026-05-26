@@ -8921,7 +8921,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'A' ||
           lookahead == 'a') ADVANCE(162);
       if (lookahead == 'E' ||
-          lookahead == 'e') ADVANCE(163);
+          lookahead == 'e') ADVANCE(164);
       END_STATE();
     case 40:
       if (lookahead == 'A' ||
@@ -8970,7 +8970,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 47:
       if (lookahead == 'C' ||
-          lookahead == 'c') ADVANCE(178);
+          lookahead == 'c') ADVANCE(179);
       END_STATE();
     case 48:
       if (lookahead == 'O' ||
@@ -9053,7 +9053,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 64:
       if (lookahead == 'R' ||
-          lookahead == 'r') ADVANCE(204);
+          lookahead == 'r') ADVANCE(205);
       END_STATE();
     case 65:
       if (lookahead == 'O' ||
@@ -9126,7 +9126,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 79:
       ACCEPT_TOKEN(sym__kw_is);
       if (lookahead == 'S' ||
-          lookahead == 's') ADVANCE(226);
+          lookahead == 's') ADVANCE(227);
       END_STATE();
     case 80:
       if (lookahead == 'C' ||
@@ -9247,7 +9247,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'S' ||
           lookahead == 's') ADVANCE(257);
       if (lookahead == 'T' ||
-          lookahead == 't') ADVANCE(258);
+          lookahead == 't') ADVANCE(259);
       END_STATE();
     case 105:
       if (lookahead == 'A' ||
@@ -9272,7 +9272,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 109:
       if (lookahead == 'N' ||
-          lookahead == 'n') ADVANCE(267);
+          lookahead == 'n') ADVANCE(268);
       END_STATE();
     case 110:
       ADVANCE_MAP(
@@ -9449,7 +9449,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 141:
       if (lookahead == 'E' ||
-          lookahead == 'e') ADVANCE(321);
+          lookahead == 'e') ADVANCE(322);
       END_STATE();
     case 142:
       if (lookahead == 'A' ||
@@ -9564,6 +9564,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'T' ||
           lookahead == 't') ADVANCE(350);
       END_STATE();
+    case 167:
+      if (lookahead == 'A' ||
+          lookahead == 'a') ADVANCE(346);
+      END_STATE();
     case 168:
       if (lookahead == 'I' ||
           lookahead == 'i') ADVANCE(351);
@@ -9675,6 +9679,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
           lookahead == 'l') ADVANCE(378);
       if (lookahead == 'U' ||
           lookahead == 'u') ADVANCE(379);
+      END_STATE();
+    case 195:
+      if (lookahead == 'N' ||
+          lookahead == 'n') ADVANCE(375);
       END_STATE();
     case 196:
       if (lookahead == 'E' ||
@@ -9794,6 +9802,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'U' ||
           lookahead == 'u') ADVANCE(405);
       END_STATE();
+    case 226:
+      if (lookahead == 'A' ||
+          lookahead == 'a') ADVANCE(405);
+      END_STATE();
     case 227:
       if (lookahead == 'C' ||
           lookahead == 'c') ADVANCE(406);
@@ -9818,6 +9830,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 233:
       ACCEPT_TOKEN(sym__kw_let);
+      END_STATE();
+    case 233:
+      if (lookahead == 's') ADVANCE(411);
       END_STATE();
     case 234:
       if (lookahead == 'I' ||
@@ -10155,6 +10170,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'S' ||
           lookahead == 's') ADVANCE(493);
       END_STATE();
+    case 317:
+      if (lookahead == 'N' ||
+          lookahead == 'n') ADVANCE(497);
+      END_STATE();
     case 318:
       if (lookahead == 'R' ||
           lookahead == 'r') ADVANCE(494);
@@ -10278,6 +10297,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 348:
       if (lookahead == 'U' ||
           lookahead == 'u') ADVANCE(523);
+      END_STATE();
+    case 348:
+      if (lookahead == 'G' ||
+          lookahead == 'g') ADVANCE(527);
       END_STATE();
     case 349:
       if (lookahead == 'I' ||
@@ -10591,6 +10614,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'I' ||
           lookahead == 'i') ADVANCE(592);
       END_STATE();
+    case 430:
+      if (lookahead == 'H' ||
+          lookahead == 'h') ADVANCE(607);
+      END_STATE();
     case 431:
       if (lookahead == 'W' ||
           lookahead == 'w') ADVANCE(593);
@@ -10668,6 +10695,14 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'V' ||
           lookahead == 'v') ADVANCE(612);
       END_STATE();
+    case 448:
+      if (lookahead == 'U' ||
+          lookahead == 'u') ADVANCE(622);
+      END_STATE();
+    case 449:
+      if (lookahead == 'X' ||
+          lookahead == 'x') ADVANCE(623);
+      END_STATE();
     case 450:
       if (lookahead == 'A' ||
           lookahead == 'a') ADVANCE(613);
@@ -10733,6 +10768,17 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'B' ||
           lookahead == 'b') ADVANCE(628);
       END_STATE();
+    case 464:
+      if (lookahead == 'L' ||
+          lookahead == 'l') ADVANCE(634);
+      END_STATE();
+    case 465:
+      if (lookahead == 'E' ||
+          lookahead == 'e') ADVANCE(635);
+      END_STATE();
+    case 466:
+      ACCEPT_TOKEN(sym_keyword_omit);
+      END_STATE();
     case 467:
       if (lookahead == 'T' ||
           lookahead == 't') ADVANCE(629);
@@ -10749,6 +10795,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'C' ||
           lookahead == 'c') ADVANCE(632);
       END_STATE();
+    case 470:
+      if (lookahead == 'I' ||
+          lookahead == 'i') ADVANCE(638);
+      END_STATE();
     case 471:
       if (lookahead == 'E' ||
           lookahead == 'e') ADVANCE(633);
@@ -10763,6 +10813,13 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 474:
       ACCEPT_TOKEN(sym__kw_then);
+      END_STATE();
+    case 473:
+      ACCEPT_TOKEN(sym_keyword_rand);
+      END_STATE();
+    case 474:
+      if (lookahead == 'O' ||
+          lookahead == 'o') ADVANCE(641);
       END_STATE();
     case 475:
       if (lookahead == 'W' ||
@@ -10913,7 +10970,7 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 515:
       if (lookahead == 'E' ||
-          lookahead == 'e') ADVANCE(663);
+          lookahead == 'e') ADVANCE(665);
       END_STATE();
     case 516:
       if (lookahead == 'S' ||
@@ -11054,6 +11111,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 552:
       if (lookahead == 'G' ||
           lookahead == 'g') ADVANCE(692);
+      END_STATE();
+    case 552:
+      if (lookahead == 'I' ||
+          lookahead == 'i') ADVANCE(701);
       END_STATE();
     case 553:
       if (lookahead == 'D' ||
@@ -11316,6 +11377,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'T' ||
           lookahead == 't') ADVANCE(741);
       END_STATE();
+    case 622:
+      if (lookahead == 'D' ||
+          lookahead == 'd') ADVANCE(745);
+      END_STATE();
     case 623:
       if (lookahead == 'O' ||
           lookahead == 'o') ADVANCE(742);
@@ -11347,6 +11412,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 631:
       if (lookahead == 'T' ||
           lookahead == 't') ADVANCE(746);
+      END_STATE();
+    case 631:
+      ACCEPT_TOKEN(sym_keyword_merge);
       END_STATE();
     case 632:
       if (lookahead == 'T' ||
@@ -11382,6 +11450,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 640:
       if (lookahead == 'A' ||
           lookahead == 'a') ADVANCE(753);
+      END_STATE();
+    case 640:
+      ACCEPT_TOKEN(sym_keyword_owner);
       END_STATE();
     case 641:
       if (lookahead == 'E' ||
@@ -11449,6 +11520,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 658:
       ACCEPT_TOKEN(sym__kw_before);
+      END_STATE();
+    case 658:
+      if (lookahead == '_') ADVANCE(773);
       END_STATE();
     case 659:
       ACCEPT_TOKEN(sym__kw_bucket);
@@ -11537,6 +11611,8 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
           lookahead == 'i') ADVANCE(781);
       END_STATE();
     case 682:
+      if (lookahead == 'F' ||
+          lookahead == 'f') ADVANCE(788);
       if (lookahead == 'S' ||
           lookahead == 's') ADVANCE(782);
       END_STATE();
@@ -11723,6 +11799,13 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'D' ||
           lookahead == 'd') ADVANCE(822);
       END_STATE();
+    case 729:
+      if (lookahead == 'T' ||
+          lookahead == 't') ADVANCE(823);
+      END_STATE();
+    case 730:
+      ACCEPT_TOKEN(sym_keyword_define);
+      END_STATE();
     case 731:
       ACCEPT_TOKEN(sym__kw_record);
       END_STATE();
@@ -11742,6 +11825,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 736:
       ACCEPT_TOKEN(sym__kw_remove);
+      END_STATE();
+    case 736:
+      ACCEPT_TOKEN(sym_keyword_fields);
       END_STATE();
     case 737:
       if (lookahead == 'E' ||
@@ -11959,6 +12045,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'N' ||
           lookahead == 'n') ADVANCE(862);
       END_STATE();
+    case 795:
+      if (lookahead == 'S' ||
+          lookahead == 's') ADVANCE(866);
+      END_STATE();
     case 796:
       ACCEPT_TOKEN(sym__kw_graphql);
       END_STATE();
@@ -12002,6 +12092,9 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 807:
       if (lookahead == 'A' ||
           lookahead == 'a') ADVANCE(870);
+      END_STATE();
+    case 807:
+      ACCEPT_TOKEN(sym_keyword_numeric);
       END_STATE();
     case 808:
       if (lookahead == 'C' ||
@@ -12168,6 +12261,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 851:
       ACCEPT_TOKEN(sym__kw_database);
       END_STATE();
+    case 851:
+      if (lookahead == 'A' ||
+          lookahead == 'a') ADVANCE(902);
+      END_STATE();
     case 852:
       if (lookahead == 'N' ||
           lookahead == 'n') ADVANCE(902);
@@ -12185,6 +12282,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 855:
       if (lookahead == 'E' ||
           lookahead == 'e') ADVANCE(906);
+      END_STATE();
+    case 855:
+      if (lookahead == 'T' ||
+          lookahead == 't') ADVANCE(905);
       END_STATE();
     case 856:
       ACCEPT_TOKEN(sym__kw_duration);
@@ -12316,6 +12417,12 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 890:
       if (lookahead == 'R' ||
           lookahead == 'r') ADVANCE(932);
+      END_STATE();
+    case 889:
+      ACCEPT_TOKEN(sym_keyword_duration);
+      END_STATE();
+    case 890:
+      ACCEPT_TOKEN(sym_keyword_flexible);
       END_STATE();
     case 891:
       if (lookahead == 'I' ||
@@ -12571,6 +12678,10 @@ static bool ts_lex_keywords(TSLexer *lexer, TSStateId state) {
     case 959:
       if (lookahead == 'N' ||
           lookahead == 'n') ADVANCE(977);
+      END_STATE();
+    case 959:
+      if (lookahead == 'R' ||
+          lookahead == 'r') ADVANCE(974);
       END_STATE();
     case 960:
       if (lookahead == 'E' ||

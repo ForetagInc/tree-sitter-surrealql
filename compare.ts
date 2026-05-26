@@ -8,10 +8,10 @@
  * Exits 0 on match, 1 on mismatch (with first diverging subtree printed).
  */
 
-import { execSync } from "node:child_process";
-import * as fs from "node:fs";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import { execSync } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // ---------------------------------------------------------------------------
 // Canonical tree representation
@@ -25,17 +25,17 @@ interface CNode {
 	to?: number;
 }
 
-function fmt(node: CNode, indent = ""): string {
+function fmt(node: CNode, indent = ''): string {
 	if (node.children.length === 0) return `${indent}${node.name}`;
 	const out = [`${indent}${node.name}(`];
 	for (const c of node.children) out.push(fmt(c, `${indent}  `));
 	out.push(`${indent})`);
-	return out.join("\n");
+	return out.join('\n');
 }
 
 function fmtFlat(node: CNode): string {
 	if (node.children.length === 0) return node.name;
-	return `${node.name}(${node.children.map(fmtFlat).join(",")})`;
+	return `${node.name}(${node.children.map(fmtFlat).join(',')})`;
 }
 
 // ---------------------------------------------------------------------------
@@ -44,12 +44,20 @@ function fmtFlat(node: CNode): string {
 
 const TS_DIR_FOR_LEZER = path.dirname(fileURLToPath(import.meta.url));
 const LEZER_DIST_CANDIDATES = [
-	path.resolve(TS_DIR_FOR_LEZER, "../codemirror/packages/lezer-surrealql/dist/index.cjs"),
-	path.resolve(TS_DIR_FOR_LEZER, "../../codemirror/packages/lezer-surrealql/dist/index.cjs"),
-	process.env.LEZER_DIST ?? "",
+	path.resolve(
+		TS_DIR_FOR_LEZER,
+		'../codemirror/packages/lezer-surrealql/dist/index.cjs',
+	),
+	path.resolve(
+		TS_DIR_FOR_LEZER,
+		'../../codemirror/packages/lezer-surrealql/dist/index.cjs',
+	),
+	process.env.LEZER_DIST ?? '',
 ].filter(Boolean);
 
-const LEZER_DIST = LEZER_DIST_CANDIDATES.find((p) => fs.existsSync(p)) ?? LEZER_DIST_CANDIDATES[0];
+const LEZER_DIST =
+	LEZER_DIST_CANDIDATES.find((p) => fs.existsSync(p)) ??
+	LEZER_DIST_CANDIDATES[0];
 
 // biome-ignore lint/suspicious/noExplicitAny: dynamic CJS interop
 async function loadLezer(): Promise<any> {
@@ -71,14 +79,14 @@ async function loadLezer(): Promise<any> {
  * for explicit `ENFORCED`) they pass through normally.
  */
 const STRIP_WHEN_EMPTY = new Set([
-	"EnforcedClause",
-	"DefaultAlways",
-	"ApiOptions",
-	"RecurseOptions",
+	'EnforcedClause',
+	'DefaultAlways',
+	'ApiOptions',
+	'RecurseOptions',
 	// Lezer emits a zero-width error placeholder (⚠ → ERROR) where the grammar
 	// expected a non-optional element but the input is missing it. Tree-sitter
 	// emits no such placeholder, so we drop empty ERRORs to compare structurally.
-	"ERROR",
+	'ERROR',
 ]);
 
 /**
@@ -89,29 +97,32 @@ const STRIP_WHEN_EMPTY = new Set([
  * for structural comparison.
  */
 const STRIP_ALWAYS = new Set([
-	"[",
-	"]",
-	"(",
-	")",
-	"<",
-	">",
-	"+",
-	"-",
-	"=",
-	"*",
-	"~",
-	"!~",
-	"*~",
-	"/",
-	"%",
-	"?",
-	"!",
-	"@",
-	"|>",
-	"<|",
+	'[',
+	']',
+	'(',
+	')',
+	'<',
+	'>',
+	'+',
+	'-',
+	'=',
+	'*',
+	'~',
+	'!~',
+	'*~',
+	'/',
+	'%',
+	'?',
+	'!',
+	'@',
+	'|>',
+	'<|',
 ]);
 
-function lezerToCanonical(input: string, parser: { parse(s: string): unknown }): CNode {
+function lezerToCanonical(
+	input: string,
+	parser: { parse(s: string): unknown },
+): CNode {
 	// biome-ignore lint/suspicious/noExplicitAny: lezer tree cursor types are minimal
 	const tree = parser.parse(input) as any;
 	const cursor = tree.cursor();
@@ -122,7 +133,7 @@ function lezerToCanonical(input: string, parser: { parse(s: string): unknown }):
 		const name = cursor.name as string;
 		const isAnon = type?.isAnonymous as boolean;
 		// Normalise lezer's error node name (⚠) to the tree-sitter convention.
-		const normName = name === "\u26A0" ? "ERROR" : name;
+		const normName = name === '\u26A0' ? 'ERROR' : name;
 		const node: CNode = {
 			name: normName,
 			children: [],
@@ -166,7 +177,7 @@ function flattenErrors(node: CNode | null): CNode | null {
 	for (const c of node.children) {
 		const f = flattenErrors(c);
 		if (!f) continue;
-		if (f.name === "ERROR") flatChildren.push(...f.children);
+		if (f.name === 'ERROR') flatChildren.push(...f.children);
 		else flatChildren.push(f);
 	}
 	node.children = flatChildren;
@@ -177,17 +188,17 @@ function flattenErrors(node: CNode | null): CNode | null {
 // Tree-sitter side
 // ---------------------------------------------------------------------------
 
-const TS_DIR = path.resolve(fileURLToPath(import.meta.url), "..");
-const TS_BIN = path.join(TS_DIR, "node_modules/.bin/tree-sitter");
+const TS_DIR = path.resolve(fileURLToPath(import.meta.url), '..');
+const TS_BIN = path.join(TS_DIR, 'node_modules/.bin/tree-sitter');
 
 function treeSitterSExpr(input: string): string {
-	const tmp = path.join(TS_DIR, ".compare.tmp.surql");
+	const tmp = path.join(TS_DIR, '.compare.tmp.surql');
 	fs.writeFileSync(tmp, input);
 	try {
 		// tree-sitter parse exits non-zero on parse errors but still emits the
 		// (ERROR ...) tree we want to inspect, so we capture stdout regardless.
 		return execSync(`${TS_BIN} parse ${tmp} 2>/dev/null || true`, {
-			encoding: "utf-8",
+			encoding: 'utf-8',
 		});
 	} finally {
 		try {
@@ -217,21 +228,21 @@ function parseTreeSitterSExpr(raw: string): CNode | null {
 
 function parseTreeSitterSExprInner(raw: string): CNode | null {
 	// Strip range annotations `[x, y] - [x, y]` and field labels `name:`
-	let s = raw.replace(/\[[^\]]*\]/g, "");
-	s = s.replace(/[a-zA-Z_][a-zA-Z0-9_]*:/g, ""); // field labels (rare in our grammar)
+	let s = raw.replace(/\[[^\]]*\]/g, '');
+	s = s.replace(/[a-zA-Z_][a-zA-Z0-9_]*:/g, ''); // field labels (rare in our grammar)
 
 	let i = 0;
 	function skipWs() {
-		while (i < s.length && /\s/.test(s[i] ?? "")) i++;
+		while (i < s.length && /\s/.test(s[i] ?? '')) i++;
 	}
 	function readName(): string {
 		const start = i;
-		while (i < s.length && /[A-Za-z0-9_]/.test(s[i] ?? "")) i++;
+		while (i < s.length && /[A-Za-z0-9_]/.test(s[i] ?? '')) i++;
 		return s.slice(start, i);
 	}
 	function parseNode(): CNode | null {
 		skipWs();
-		if (s[i] !== "(") return null;
+		if (s[i] !== '(') return null;
 		i++; // consume '('
 		skipWs();
 		const name = readName();
@@ -239,22 +250,25 @@ function parseTreeSitterSExprInner(raw: string): CNode | null {
 		const node: CNode = { name, children: [] };
 		while (true) {
 			skipWs();
-			if (s[i] === ")") {
+			if (s[i] === ')') {
 				i++;
 				// Apply same normalisation rules as the lezer side.
-				if (node.children.length === 0 && STRIP_WHEN_EMPTY.has(node.name)) {
+				if (
+					node.children.length === 0 &&
+					STRIP_WHEN_EMPTY.has(node.name)
+				) {
 					return null;
 				}
 				if (STRIP_ALWAYS.has(node.name)) return null;
 				return node;
 			}
-			if (s[i] === "(") {
+			if (s[i] === '(') {
 				const child = parseNode();
 				if (child) node.children.push(child);
 				continue;
 			}
 			// Unknown char (anonymous token text) — skip until ws or paren
-			while (i < s.length && !/\s|[()]/.test(s[i] ?? "")) i++;
+			while (i < s.length && !/\s|[()]/.test(s[i] ?? '')) i++;
 		}
 	}
 	return parseNode();
@@ -284,8 +298,8 @@ function diffAll(
 			path,
 			expected: expected ?? undefined,
 			actual: actual ?? undefined,
-			expectedTreeFmt: expected ? fmtFlat(expected) : "<missing>",
-			actualTreeFmt: actual ? fmtFlat(actual) : "<missing>",
+			expectedTreeFmt: expected ? fmtFlat(expected) : '<missing>',
+			actualTreeFmt: actual ? fmtFlat(actual) : '<missing>',
 		});
 		return;
 	}
@@ -310,7 +324,7 @@ function diffAll(
 
 function diff(expected: CNode | null, actual: CNode | null): DiffResult | null {
 	const all: DiffResult[] = [];
-	diffAll(expected, actual, "$", all);
+	diffAll(expected, actual, '$', all);
 	return all[0] ?? null;
 }
 
@@ -319,29 +333,29 @@ function diff(expected: CNode | null, actual: CNode | null): DiffResult | null {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-	const target = process.argv[2] ?? path.join(TS_DIR, "reference.surql");
+	const target = process.argv[2] ?? path.join(TS_DIR, 'reference.surql');
 	if (!fs.existsSync(target)) {
 		console.error(`File not found: ${target}`);
 		process.exit(2);
 	}
-	const input = fs.readFileSync(target, "utf-8");
+	const input = fs.readFileSync(target, 'utf-8');
 
 	const parser = await loadLezer();
 	const lezerTree = lezerToCanonical(input, parser);
 	const tsSExpr = treeSitterSExpr(input);
 	const tsTree = parseTreeSitterSExpr(tsSExpr);
 
-	if (process.env.DUMP === "1") {
-		console.log("LEZER:");
-		console.log(lezerTree ? fmt(lezerTree) : "<null>");
-		console.log("");
-		console.log("TREE-SITTER:");
-		console.log(tsTree ? fmt(tsTree) : "<null>");
-		console.log("");
+	if (process.env.DUMP === '1') {
+		console.log('LEZER:');
+		console.log(lezerTree ? fmt(lezerTree) : '<null>');
+		console.log('');
+		console.log('TREE-SITTER:');
+		console.log(tsTree ? fmt(tsTree) : '<null>');
+		console.log('');
 	}
 
 	const all: DiffResult[] = [];
-	diffAll(lezerTree, tsTree, "$", all);
+	diffAll(lezerTree, tsTree, '$', all);
 
 	// Top-level statement match summary
 	const lezerKids = lezerTree?.children ?? [];
@@ -361,18 +375,22 @@ async function main(): Promise<void> {
 		return;
 	}
 
-	const maxShow = process.env.ALL === "1" ? all.length : 5;
+	const maxShow = process.env.ALL === '1' ? all.length : 5;
 	console.log(
 		`MISMATCH: ${all.length} divergence(s); ${matchedStmts}/${totalStmts} top-level statements match. Showing first ${Math.min(maxShow, all.length)}.`,
 	);
 	for (let i = 0; i < Math.min(maxShow, all.length); i++) {
 		const result = all[i];
 		console.log(`\n[${i + 1}] at ${result.path}`);
-		console.log("  lezer       :", result.expectedTreeFmt.slice(0, 400));
-		console.log("  tree-sitter :", result.actualTreeFmt.slice(0, 400));
+		console.log('  lezer       :', result.expectedTreeFmt.slice(0, 400));
+		console.log('  tree-sitter :', result.actualTreeFmt.slice(0, 400));
 		if (result.expected?.from !== undefined) {
-			const ctx = sliceContext(input, result.expected.from, result.expected.to ?? result.expected.from);
-			console.log("  source span :", JSON.stringify(ctx).slice(0, 160));
+			const ctx = sliceContext(
+				input,
+				result.expected.from,
+				result.expected.to ?? result.expected.from,
+			);
+			console.log('  source span :', JSON.stringify(ctx).slice(0, 160));
 		}
 	}
 	process.exit(1);

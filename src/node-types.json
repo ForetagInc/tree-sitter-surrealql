@@ -3541,7 +3541,17 @@
   {
     "type": "IndexTypeClause",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Keyword",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "InfoForStatement",

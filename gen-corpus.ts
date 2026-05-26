@@ -7,19 +7,19 @@
  *   bun run gen-corpus.ts
  */
 
-import * as fs from "node:fs";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const TS_DIR = path.dirname(fileURLToPath(import.meta.url));
-const CORPUS_OUT = path.join(TS_DIR, "test", "corpus");
+const CORPUS_OUT = path.join(TS_DIR, 'test', 'corpus');
 const LEZER_CORPUS = path.resolve(
 	TS_DIR,
-	"../codemirror/packages/lezer-surrealql/test",
+	'../codemirror/packages/lezer-surrealql/test',
 );
 const LEZER_DIST = path.resolve(
 	TS_DIR,
-	"../codemirror/packages/lezer-surrealql/dist/index.cjs",
+	'../codemirror/packages/lezer-surrealql/dist/index.cjs',
 );
 
 interface CNode {
@@ -28,33 +28,33 @@ interface CNode {
 }
 
 const STRIP_WHEN_EMPTY = new Set([
-	"EnforcedClause",
-	"DefaultAlways",
-	"ApiOptions",
-	"RecurseOptions",
-	"ERROR",
+	'EnforcedClause',
+	'DefaultAlways',
+	'ApiOptions',
+	'RecurseOptions',
+	'ERROR',
 ]);
 const STRIP_ALWAYS = new Set([
-	"[",
-	"]",
-	"(",
-	")",
-	"<",
-	">",
-	"+",
-	"-",
-	"=",
-	"*",
-	"~",
-	"!~",
-	"*~",
-	"/",
-	"%",
-	"?",
-	"!",
-	"@",
-	"|>",
-	"<|",
+	'[',
+	']',
+	'(',
+	')',
+	'<',
+	'>',
+	'+',
+	'-',
+	'=',
+	'*',
+	'~',
+	'!~',
+	'*~',
+	'/',
+	'%',
+	'?',
+	'!',
+	'@',
+	'|>',
+	'<|',
 ]);
 
 // biome-ignore lint/suspicious/noExplicitAny: dynamic CJS interop
@@ -68,7 +68,7 @@ function lezerCanonical(input: string): CNode | null {
 	function walk(): CNode | null {
 		const name = cursor.name as string;
 		const isAnon = cursor.type?.isAnonymous as boolean;
-		const normName = name === "\u26A0" ? "ERROR" : name;
+		const normName = name === '\u26A0' ? 'ERROR' : name;
 		const node: CNode = { name: normName, children: [] };
 		if (cursor.firstChild()) {
 			do {
@@ -86,18 +86,18 @@ function lezerCanonical(input: string): CNode | null {
 	return walk();
 }
 
-function formatTree(node: CNode, indent = ""): string {
+function formatTree(node: CNode, indent = ''): string {
 	if (node.children.length === 0) return `${indent}(${node.name})`;
 	const out = [`${indent}(${node.name}`];
 	for (let i = 0; i < node.children.length; i++) {
 		out.push(formatTree(node.children[i], `${indent}  `));
 	}
-	out[out.length - 1] += ")";
-	return out.join("\n");
+	out[out.length - 1] += ')';
+	return out.join('\n');
 }
 
 function makeFixture(name: string, input: string, tree: CNode): string {
-	const header = "=".repeat(name.length);
+	const header = '='.repeat(name.length);
 	return `${header}\n${name}\n${header}\n\n${input}\n\n---\n\n${formatTree(tree)}\n`;
 }
 
@@ -110,30 +110,35 @@ let totalTests = 0;
 
 for (const dir of dirs) {
 	const lezerDir = path.join(LEZER_CORPUS, dir);
-	const files = fs.readdirSync(lezerDir).filter((f) => f.endsWith(".txt")).sort();
+	const files = fs
+		.readdirSync(lezerDir)
+		.filter((f) => f.endsWith('.txt'))
+		.sort();
 
 	const fixtures: string[] = [];
 	for (const file of files) {
-		const content = fs.readFileSync(path.join(lezerDir, file), "utf-8");
+		const content = fs.readFileSync(path.join(lezerDir, file), 'utf-8');
 		const tests = content.split(/^# /m).slice(1);
 		for (const test of tests) {
-			const lines = test.split("\n");
+			const lines = test.split('\n');
 			const name = lines[0].trim();
-			const sepIdx = lines.findIndex((l) => l.trim() === "==>");
+			const sepIdx = lines.findIndex((l) => l.trim() === '==>');
 			if (sepIdx === -1) continue;
-			const input = lines.slice(1, sepIdx).join("\n").trim();
+			const input = lines.slice(1, sepIdx).join('\n').trim();
 			if (!input) continue;
 			const tree = lezerCanonical(input);
 			if (!tree) continue;
-			const qualifiedName = `${file.replace(/\.txt$/, "")} :: ${name}`;
+			const qualifiedName = `${file.replace(/\.txt$/, '')} :: ${name}`;
 			fixtures.push(makeFixture(qualifiedName, input, tree));
 			totalTests++;
 		}
 	}
 
 	const outPath = path.join(CORPUS_OUT, `${dir}.txt`);
-	fs.writeFileSync(outPath, fixtures.join("\n"));
-	console.log(`Wrote ${fixtures.length} fixtures to ${path.relative(TS_DIR, outPath)}`);
+	fs.writeFileSync(outPath, fixtures.join('\n'));
+	console.log(
+		`Wrote ${fixtures.length} fixtures to ${path.relative(TS_DIR, outPath)}`,
+	);
 }
 
 console.log(`\nTotal: ${totalTests} test fixtures.`);

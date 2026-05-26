@@ -31,23 +31,23 @@
  */
 function kw(word) {
 	return new RegExp(
-		[...word].map((c) => `[${c.toLowerCase()}${c.toUpperCase()}]`).join(""),
+		[...word].map((c) => `[${c.toLowerCase()}${c.toUpperCase()}]`).join(''),
 	);
 }
 
 /** Comma separated list (no trailing comma) */
 function csep(rule) {
-	return seq(rule, repeat(seq(",", rule)));
+	return seq(rule, repeat(seq(',', rule)));
 }
 
 /** Comma separated with optional trailing comma */
 function csepTrail(rule) {
-	return seq(rule, repeat(seq(",", rule)), optional(","));
+	return seq(rule, repeat(seq(',', rule)), optional(','));
 }
 
 /** Pipe separated */
 function piped(rule) {
-	return seq(rule, repeat(seq("|", rule)));
+	return seq(rule, repeat(seq('|', rule)));
 }
 
 // ---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ function piped(rule) {
 // ---------------------------------------------------------------------------
 
 export default grammar({
-	name: "surrealql",
+	name: 'surrealql',
 
 	word: ($) => $._rawident,
 
@@ -67,20 +67,10 @@ export default grammar({
 	],
 
 	precedences: ($) => [
-		[
-			"range",
-			"method",
-			"binary",
-			"union",
-			"filter",
-			"for",
-			"clause",
-		],
+		['range', 'method', 'binary', 'union', 'filter', 'for', 'clause'],
 	],
 
-	conflicts: ($) => [
-		[$.RecordId, $.RecordIdRange],
-	],
+	conflicts: ($) => [[$.RecordId, $.RecordIdRange]],
 
 	rules: {
 		// ================================================================
@@ -93,8 +83,8 @@ export default grammar({
 			prec.right(
 				seq(
 					$._expression,
-					repeat(seq(";", $._expression)),
-					optional(";"),
+					repeat(seq(';', $._expression)),
+					optional(';'),
 				),
 			),
 
@@ -146,13 +136,22 @@ export default grammar({
 		// ----------------------------------------------------------------
 
 		BeginStatement: ($) =>
-			seq(alias($._kw_begin, $.Keyword), optional(alias($._kw_transaction, $.Keyword))),
+			seq(
+				alias($._kw_begin, $.Keyword),
+				optional(alias($._kw_transaction, $.Keyword)),
+			),
 
 		CancelStatement: ($) =>
-			seq(alias($._kw_cancel, $.Keyword), optional(alias($._kw_transaction, $.Keyword))),
+			seq(
+				alias($._kw_cancel, $.Keyword),
+				optional(alias($._kw_transaction, $.Keyword)),
+			),
 
 		CommitStatement: ($) =>
-			seq(alias($._kw_commit, $.Keyword), optional(alias($._kw_transaction, $.Keyword))),
+			seq(
+				alias($._kw_commit, $.Keyword),
+				optional(alias($._kw_transaction, $.Keyword)),
+			),
 
 		// ----------------------------------------------------------------
 		// Simple statements
@@ -162,14 +161,21 @@ export default grammar({
 		ContinueStatement: ($) => alias($._kw_continue, $.Keyword),
 		SleepStatement: ($) => seq(alias($._kw_sleep, $.Keyword), $.Duration),
 		ThrowStatement: ($) => seq(alias($._kw_throw, $.Keyword), $._value),
-		ReturnStatement: ($) => seq(alias($._kw_return, $.Keyword), $._expression),
+		ReturnStatement: ($) =>
+			seq(alias($._kw_return, $.Keyword), $._expression),
 
 		OptionStatement: ($) =>
 			seq(
 				alias($._kw_option, $.Keyword),
 				$.Ident,
 				optional(
-					seq("=", choice(alias($._kw_true, $.Bool), alias($._kw_false, $.Bool))),
+					seq(
+						'=',
+						choice(
+							alias($._kw_true, $.Bool),
+							alias($._kw_false, $.Bool),
+						),
+					),
 				),
 			),
 
@@ -182,9 +188,21 @@ export default grammar({
 				choice($._useNs, $._useDb, seq($._useNs, $._useDb)),
 			),
 		_useNs: ($) =>
-			seq(choice(alias($._kw_ns, $.Keyword), alias($._kw_namespace, $.Keyword)), $.Ident),
+			seq(
+				choice(
+					alias($._kw_ns, $.Keyword),
+					alias($._kw_namespace, $.Keyword),
+				),
+				$.Ident,
+			),
 		_useDb: ($) =>
-			seq(choice(alias($._kw_db, $.Keyword), alias($._kw_database, $.Keyword)), $.Ident),
+			seq(
+				choice(
+					alias($._kw_db, $.Keyword),
+					alias($._kw_database, $.Keyword),
+				),
+				$.Ident,
+			),
 
 		// SHOW
 		ShowStatement: ($) =>
@@ -222,7 +240,7 @@ export default grammar({
 			seq(
 				alias($._kw_let, $.Keyword),
 				$.ParamDefinition,
-				"=",
+				'=',
 				choice($._value, $._subqueryStatement),
 			),
 
@@ -248,10 +266,7 @@ export default grammar({
 
 		// IF/ELSE
 		IfElseStatement: ($) =>
-			seq(
-				alias($._kw_if, $.Keyword),
-				choice($.Legacy, $.Modern),
-			),
+			seq(alias($._kw_if, $.Keyword), choice($.Legacy, $.Modern)),
 		Legacy: ($) =>
 			seq(
 				$._value,
@@ -266,7 +281,12 @@ export default grammar({
 						choice($.Block, $.SubQuery),
 					),
 				),
-				optional(seq(alias($._kw_else, $.Keyword), choice($.Block, $.SubQuery))),
+				optional(
+					seq(
+						alias($._kw_else, $.Keyword),
+						choice($.Block, $.SubQuery),
+					),
+				),
 				alias($._kw_end, $.Keyword),
 			),
 		Modern: ($) =>
@@ -323,20 +343,109 @@ export default grammar({
 			seq(
 				alias($._kw_remove, $.Keyword),
 				choice(
-					seq(alias($._kw_namespace, $.Keyword), optional($.IfExistsClause), $._value, optional(seq(alias($._kw_and, $.Keyword), alias($._kw_expunge, $.Keyword)))),
-					seq(alias($._kw_database, $.Keyword), optional($.IfExistsClause), $._value, optional(seq(alias($._kw_and, $.Keyword), alias($._kw_expunge, $.Keyword)))),
-					seq(alias($._kw_user, $.Keyword), optional($.IfExistsClause), $._value, alias($._kw_on, $.Keyword), choice(alias($._kw_root, $.Keyword), alias($._kw_namespace, $.Keyword), alias($._kw_database, $.Keyword))),
-					seq(alias($._kw_token, $.Keyword), optional($.IfExistsClause), $._value, alias($._kw_on, $.Keyword), choice(alias($._kw_namespace, $.Keyword), alias($._kw_database, $.Keyword), alias($._kw_scope, $.Keyword))),
-					seq(alias($._kw_event, $.Keyword), optional($.IfExistsClause), $._value, $.OnTableClause),
-					seq(alias($._kw_field, $.Keyword), optional($.IfExistsClause), $._value, $.OnTableClause),
-					seq(alias($._kw_index, $.Keyword), optional($.IfExistsClause), $._value, $.OnTableClause),
-					seq(alias($._kw_analyzer, $.Keyword), optional($.IfExistsClause), $._value),
-					seq(alias($._kw_function, $.Keyword), optional($.IfExistsClause), $.FunctionName),
-					seq(alias($._kw_param, $.Keyword), optional($.IfExistsClause), $.VariableName),
-					seq(alias($._kw_scope, $.Keyword), optional($.IfExistsClause), $._value),
-					seq(alias($._kw_table, $.Keyword), optional($.IfExistsClause), $._value, optional(seq(alias($._kw_and, $.Keyword), alias($._kw_expunge, $.Keyword)))),
-					seq(alias($._kw_api, $.Keyword), optional($.IfExistsClause), $._value),
-					seq(alias($._kw_bucket, $.Keyword), optional($.IfExistsClause), $._value),
+					seq(
+						alias($._kw_namespace, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						optional(
+							seq(
+								alias($._kw_and, $.Keyword),
+								alias($._kw_expunge, $.Keyword),
+							),
+						),
+					),
+					seq(
+						alias($._kw_database, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						optional(
+							seq(
+								alias($._kw_and, $.Keyword),
+								alias($._kw_expunge, $.Keyword),
+							),
+						),
+					),
+					seq(
+						alias($._kw_user, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						alias($._kw_on, $.Keyword),
+						choice(
+							alias($._kw_root, $.Keyword),
+							alias($._kw_namespace, $.Keyword),
+							alias($._kw_database, $.Keyword),
+						),
+					),
+					seq(
+						alias($._kw_token, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						alias($._kw_on, $.Keyword),
+						choice(
+							alias($._kw_namespace, $.Keyword),
+							alias($._kw_database, $.Keyword),
+							alias($._kw_scope, $.Keyword),
+						),
+					),
+					seq(
+						alias($._kw_event, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						$.OnTableClause,
+					),
+					seq(
+						alias($._kw_field, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						$.OnTableClause,
+					),
+					seq(
+						alias($._kw_index, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						$.OnTableClause,
+					),
+					seq(
+						alias($._kw_analyzer, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+					),
+					seq(
+						alias($._kw_function, $.Keyword),
+						optional($.IfExistsClause),
+						$.FunctionName,
+					),
+					seq(
+						alias($._kw_param, $.Keyword),
+						optional($.IfExistsClause),
+						$.VariableName,
+					),
+					seq(
+						alias($._kw_scope, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+					),
+					seq(
+						alias($._kw_table, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+						optional(
+							seq(
+								alias($._kw_and, $.Keyword),
+								alias($._kw_expunge, $.Keyword),
+							),
+						),
+					),
+					seq(
+						alias($._kw_api, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+					),
+					seq(
+						alias($._kw_bucket, $.Keyword),
+						optional($.IfExistsClause),
+						$._value,
+					),
 				),
 			),
 
@@ -346,15 +455,27 @@ export default grammar({
 				alias($._kw_define, $.Keyword),
 				choice(
 					$.AccessDefinition,
-					seq(alias($._kw_namespace, $.Keyword), $._defineNamespaceOptions),
-					seq(alias($._kw_database, $.Keyword), $._defineDatabaseOptions),
+					seq(
+						alias($._kw_namespace, $.Keyword),
+						$._defineNamespaceOptions,
+					),
+					seq(
+						alias($._kw_database, $.Keyword),
+						$._defineDatabaseOptions,
+					),
 					seq(alias($._kw_user, $.Keyword), $._defineUserOptions),
 					seq(alias($._kw_token, $.Keyword), $._defineTokenOptions),
 					seq(alias($._kw_event, $.Keyword), $._defineEventOptions),
 					seq(alias($._kw_field, $.Keyword), $._defineFieldOptions),
 					seq(alias($._kw_index, $.Keyword), $._defineIndexOptions),
-					seq(alias($._kw_analyzer, $.Keyword), $._defineAnalyzerOptions),
-					seq(alias($._kw_function, $.Keyword), $._defineFunctionOptions),
+					seq(
+						alias($._kw_analyzer, $.Keyword),
+						$._defineAnalyzerOptions,
+					),
+					seq(
+						alias($._kw_function, $.Keyword),
+						$._defineFunctionOptions,
+					),
 					seq(alias($._kw_param, $.Keyword), $._defineParamOptions),
 					$.ScopeDefinition,
 					seq(alias($._kw_table, $.Keyword), $._defineTableOptions),
@@ -388,7 +509,12 @@ export default grammar({
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$._value,
 				repeat(
-					choice($.TokenizersClause, $.FiltersClause, $.FunctionClause, $.CommentClause),
+					choice(
+						$.TokenizersClause,
+						$.FiltersClause,
+						$.FunctionClause,
+						$.CommentClause,
+					),
 				),
 			),
 
@@ -432,7 +558,7 @@ export default grammar({
 			seq(
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$.FunctionName, // customFunctionName aliased to FunctionName
-				seq("(", optional(csep($.ParamDefinition)), ")"),
+				seq('(', optional(csep($.ParamDefinition)), ')'),
 				optional(seq($.LookupRight, $._type)),
 				$.Block,
 				repeat(choice($.PermissionsBasicClause, $.CommentClause)),
@@ -477,7 +603,12 @@ export default grammar({
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$._value,
 				repeat(
-					choice($.SessionClause, $.SigninClause, $.SignupClause, $.CommentClause),
+					choice(
+						$.SessionClause,
+						$.SigninClause,
+						$.SignupClause,
+						$.CommentClause,
+					),
 				),
 			),
 
@@ -503,7 +634,10 @@ export default grammar({
 			seq(
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				choice(
-					seq(alias($._kw_graphql, $.Keyword), $._defineConfigGraphqlOptions),
+					seq(
+						alias($._kw_graphql, $.Keyword),
+						$._defineConfigGraphqlOptions,
+					),
 					seq(alias($._kw_api, $.Keyword), $.ApiOptions),
 				),
 			),
@@ -523,7 +657,10 @@ export default grammar({
 					),
 					seq(
 						alias($._kw_functions, $.Keyword),
-						choice(alias($._kw_none, $.None), alias($._kw_auto, $.Keyword)),
+						choice(
+							alias($._kw_none, $.None),
+							alias($._kw_auto, $.Keyword),
+						),
 					),
 				),
 			),
@@ -550,7 +687,10 @@ export default grammar({
 				$._value,
 				$.OnRootNsDbClause,
 				seq(
-					choice(alias($._kw_password, $.Keyword), alias($._kw_passhash, $.Keyword)),
+					choice(
+						alias($._kw_password, $.Keyword),
+						alias($._kw_passhash, $.Keyword),
+					),
 					$.String,
 				),
 				seq(alias($._kw_roles, $.Keyword), csep($.Ident)),
@@ -573,13 +713,20 @@ export default grammar({
 				),
 			),
 
-		ApiOptions: ($) => repeat1(choice($.PermissionsBasicClause, $.MiddlewareClause)),
+		ApiOptions: ($) =>
+			repeat1(choice($.PermissionsBasicClause, $.MiddlewareClause)),
 
 		_defineBucketOptions: ($) =>
 			seq(
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$._value,
-				repeat(choice($.BackendClause, $.PermissionsBasicClause, $.CommentClause)),
+				repeat(
+					choice(
+						$.BackendClause,
+						$.PermissionsBasicClause,
+						$.CommentClause,
+					),
+				),
 			),
 
 		// CREATE
@@ -587,7 +734,9 @@ export default grammar({
 			seq(
 				alias($._kw_create, $.Keyword),
 				optional(alias($._kw_only, $.Keyword)),
-				csep(choice($.Ident, $.VariableName, $.FunctionCall, $.RecordId)),
+				csep(
+					choice($.Ident, $.VariableName, $.FunctionCall, $.RecordId),
+				),
 				optional(choice($.ContentClause, $.SetClause, $.UnsetClause)),
 				optional($.ReturnClause),
 				optional($.TimeoutClause),
@@ -602,7 +751,10 @@ export default grammar({
 				optional($.OmitClause),
 				alias($._kw_from, $.Keyword),
 				optional(alias($._kw_only, $.Keyword)),
-				choice($._statement, seq(csep($._value), repeat($._modifierClause))),
+				choice(
+					$._statement,
+					seq(csep($._value), repeat($._modifierClause)),
+				),
 			),
 
 		// DELETE
@@ -638,11 +790,11 @@ export default grammar({
 					$.VariableName,
 					$.BulkInsert,
 					seq(
-						"(",
+						'(',
 						csep($.Ident),
-						")",
+						')',
 						alias($._kw_values, $.Keyword),
-						csep(seq("(", csep($._value), ")")),
+						csep(seq('(', csep($._value), ')')),
 					),
 				),
 				optional(
@@ -656,7 +808,7 @@ export default grammar({
 				),
 				optional($.ReturnClause),
 			),
-		BulkInsert: ($) => seq("[", csep($.Object), "]"),
+		BulkInsert: ($) => seq('[', csep($.Object), ']'),
 
 		// UPDATE
 		UpdateStatement: ($) =>
@@ -696,7 +848,13 @@ export default grammar({
 
 		// RELATE
 		_relateSubject: ($) =>
-			choice($.Array, $.Ident, $.FunctionCall, $.VariableName, $.RecordId),
+			choice(
+				$.Array,
+				$.Ident,
+				$.FunctionCall,
+				$.VariableName,
+				$.RecordId,
+			),
 		RelateStatement: ($) =>
 			seq(
 				alias($._kw_relate, $.Keyword),
@@ -744,11 +902,13 @@ export default grammar({
 			),
 
 		ContentClause: ($) => seq(alias($._kw_content, $.Keyword), $.Object),
-		SetClause: ($) => seq(alias($._kw_set, $.Keyword), csep($.FieldAssignment)),
+		SetClause: ($) =>
+			seq(alias($._kw_set, $.Keyword), csep($.FieldAssignment)),
 		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $.Object),
 		PatchClause: ($) => seq(alias($._kw_patch, $.Keyword), $.Array),
 		ReplaceClause: ($) => seq(alias($._kw_replace, $.Keyword), $.Object),
-		UnsetClause: ($) => seq(alias($._kw_unset, $.Keyword), csep($.FieldAssignment)),
+		UnsetClause: ($) =>
+			seq(alias($._kw_unset, $.Keyword), csep($.FieldAssignment)),
 		OmitClause: ($) =>
 			seq(alias($._kw_omit, $.Keyword), csep($._inclusivePredicate)),
 
@@ -824,9 +984,11 @@ export default grammar({
 		ParallelClause: ($) => alias($._kw_parallel, $.Keyword),
 		TempfilesClause: ($) => alias($._kw_tempfiles, $.Keyword),
 		ExplainClause: ($) =>
-			seq(alias($._kw_explain, $.Keyword), optional(alias($._kw_full, $.Literal))),
-		VersionClause: ($) =>
-			seq(alias($._kw_version, $.Keyword), $.String),
+			seq(
+				alias($._kw_explain, $.Keyword),
+				optional(alias($._kw_full, $.Literal)),
+			),
+		VersionClause: ($) => seq(alias($._kw_version, $.Keyword), $.String),
 
 		ReturnClause: ($) =>
 			seq(
@@ -899,7 +1061,12 @@ export default grammar({
 
 		JwtClause: ($) =>
 			choice(
-				seq(alias($._kw_algorithm, $.Keyword), $.Ident, alias($._kw_key, $.Keyword), $.Ident),
+				seq(
+					alias($._kw_algorithm, $.Keyword),
+					$.Ident,
+					alias($._kw_key, $.Keyword),
+					$.Ident,
+				),
 				seq(alias($._kw_url, $.Keyword), $.String),
 			),
 
@@ -908,26 +1075,45 @@ export default grammar({
 		SigninClause: ($) =>
 			seq(alias($._kw_signin, $.Keyword), choice($.SubQuery, $.Block)),
 		AuthenticateClause: ($) =>
-			seq(alias($._kw_authenticate, $.Keyword), choice($.SubQuery, $.Block)),
+			seq(
+				alias($._kw_authenticate, $.Keyword),
+				choice($.SubQuery, $.Block),
+			),
 		SessionClause: ($) => seq(alias($._kw_session, $.Keyword), $.Duration),
 
 		DurationClause: ($) =>
 			seq(
 				alias($._kw_duration, $.Keyword),
-				optional(seq(alias($._kw_for, $.Keyword), alias($._kw_session, $.Keyword))),
+				optional(
+					seq(
+						alias($._kw_for, $.Keyword),
+						alias($._kw_session, $.Keyword),
+					),
+				),
 				csep($.DurationValue),
 			),
 		DurationValue: ($) =>
 			choice(
-				seq(alias($._kw_for, $.Keyword), alias($._kw_token, $.Keyword), $.Duration),
-				seq(alias($._kw_for, $.Keyword), alias($._kw_session, $.Keyword), $.Duration),
+				seq(
+					alias($._kw_for, $.Keyword),
+					alias($._kw_token, $.Keyword),
+					$.Duration,
+				),
+				seq(
+					alias($._kw_for, $.Keyword),
+					alias($._kw_session, $.Keyword),
+					$.Duration,
+				),
 			),
 
 		TokenTypeClause: ($) => seq(alias($._kw_type, $.Keyword), $.TokenType),
 
 		FieldsColumnsClause: ($) =>
 			seq(
-				choice(alias($._kw_fields, $.Keyword), alias($._kw_columns, $.Keyword)),
+				choice(
+					alias($._kw_fields, $.Keyword),
+					alias($._kw_columns, $.Keyword),
+				),
 				csep($.Idiom),
 			),
 
@@ -964,18 +1150,24 @@ export default grammar({
 		Bm25Clause: ($) =>
 			seq(
 				alias($._kw_bm25, $.Keyword),
-				optional(seq("(", $.Number, ",", $.Number, ")")),
+				optional(seq('(', $.Number, ',', $.Number, ')')),
 			),
-		DocIdsCacheClause: ($) => seq(alias($._kw_doc_ids_cache, $.Keyword), $.Number),
-		DocIdsOrderClause: ($) => seq(alias($._kw_doc_ids_order, $.Keyword), $.Number),
+		DocIdsCacheClause: ($) =>
+			seq(alias($._kw_doc_ids_cache, $.Keyword), $.Number),
+		DocIdsOrderClause: ($) =>
+			seq(alias($._kw_doc_ids_order, $.Keyword), $.Number),
 		DocLenghtsCacheClause: ($) =>
 			seq(alias($._kw_doc_lengths_cache, $.Keyword), $.Number),
 		DocLenghtsOrderClause: ($) =>
 			seq(alias($._kw_doc_lengths_order, $.Keyword), $.Number),
-		PostingsCacheClause: ($) => seq(alias($._kw_postings_cache, $.Keyword), $.Number),
-		PostingsOrderClause: ($) => seq(alias($._kw_postings_order, $.Keyword), $.Number),
-		TermsCacheClause: ($) => seq(alias($._kw_terms_cache, $.Keyword), $.Number),
-		TermsOrderClause: ($) => seq(alias($._kw_terms_order, $.Keyword), $.Number),
+		PostingsCacheClause: ($) =>
+			seq(alias($._kw_postings_cache, $.Keyword), $.Number),
+		PostingsOrderClause: ($) =>
+			seq(alias($._kw_postings_order, $.Keyword), $.Number),
+		TermsCacheClause: ($) =>
+			seq(alias($._kw_terms_cache, $.Keyword), $.Number),
+		TermsOrderClause: ($) =>
+			seq(alias($._kw_terms_order, $.Keyword), $.Number),
 
 		MtreeClause: ($) =>
 			seq(
@@ -992,7 +1184,8 @@ export default grammar({
 					),
 				),
 			),
-		MtreeCacheClause: ($) => seq(alias($._kw_mtree_cache, $.Keyword), $.Number),
+		MtreeCacheClause: ($) =>
+			seq(alias($._kw_mtree_cache, $.Keyword), $.Number),
 		MtreeDistClause: ($) => seq(alias($._kw_dist, $.Keyword), $.Distance),
 
 		HnswClause: ($) =>
@@ -1016,17 +1209,24 @@ export default grammar({
 		HnswDistClause: ($) =>
 			seq(
 				alias($._kw_dist, $.Keyword),
-				choice($.Distance, seq(alias($._kw_minkowski, $.Distance), $.Number)),
+				choice(
+					$.Distance,
+					seq(alias($._kw_minkowski, $.Distance), $.Number),
+				),
 			),
 
-		IndexDimensionClause: ($) => seq(alias($._kw_dimension, $.Keyword), $.Number),
-		IndexCapacityClause: ($) => seq(alias($._kw_capacity, $.Keyword), $.Number),
+		IndexDimensionClause: ($) =>
+			seq(alias($._kw_dimension, $.Keyword), $.Number),
+		IndexCapacityClause: ($) =>
+			seq(alias($._kw_capacity, $.Keyword), $.Number),
 		IndexLmClause: ($) => seq(alias($._kw_lm, $.Keyword), $.Number),
 		IndexM0Clause: ($) => seq(alias($._kw_m0, $.Keyword), $.Number),
 		IndexMClause: ($) => seq(alias($._kw_m, $.Keyword), $.Number),
 		IndexEfcClause: ($) => seq(alias($._kw_efc, $.Keyword), $.Number),
-		IndexExtendCandidatesClause: ($) => alias($._kw_extend_candidates, $.Keyword),
-		IndexKeepPrunedConnectionsClause: ($) => alias($._kw_keep_pruned_connections, $.Keyword),
+		IndexExtendCandidatesClause: ($) =>
+			alias($._kw_extend_candidates, $.Keyword),
+		IndexKeepPrunedConnectionsClause: ($) =>
+			alias($._kw_keep_pruned_connections, $.Keyword),
 
 		// Define table
 		TableTypeClause: ($) =>
@@ -1039,13 +1239,19 @@ export default grammar({
 						alias($._kw_relation, $.Keyword),
 						optional(
 							seq(
-								choice(alias($._kw_in, $.Keyword), alias($._kw_from, $.Keyword)),
+								choice(
+									alias($._kw_in, $.Keyword),
+									alias($._kw_from, $.Keyword),
+								),
 								piped($.Ident),
 							),
 						),
 						optional(
 							seq(
-								choice(alias($._kw_out, $.Keyword), alias($._kw_to, $.Keyword)),
+								choice(
+									alias($._kw_out, $.Keyword),
+									alias($._kw_to, $.Keyword),
+								),
 								piped($.Ident),
 							),
 						),
@@ -1066,7 +1272,8 @@ export default grammar({
 				optional($.GroupClause),
 			),
 
-		ChangefeedClause: ($) => seq(alias($._kw_changefeed, $.Keyword), $.Duration),
+		ChangefeedClause: ($) =>
+			seq(alias($._kw_changefeed, $.Keyword), $.Duration),
 
 		WhenClause: ($) => seq(alias($._kw_when, $.Keyword), $._value),
 		ThenClause: ($) =>
@@ -1091,7 +1298,11 @@ export default grammar({
 			),
 
 		DefaultClause: ($) =>
-			seq(alias($._kw_default, $.Keyword), optional($.DefaultAlways), $._value),
+			seq(
+				alias($._kw_default, $.Keyword),
+				optional($.DefaultAlways),
+				$._value,
+			),
 		DefaultAlways: ($) => alias($._kw_always, $.Keyword),
 
 		ReadonlyClause: ($) => alias($._kw_readonly, $.Keyword),
@@ -1128,7 +1339,11 @@ export default grammar({
 						alias($._kw_delete, $.Keyword),
 					),
 				),
-				choice($.WhereClause, alias($._kw_none, $.None), alias($._kw_full, $.Literal)),
+				choice(
+					$.WhereClause,
+					alias($._kw_none, $.None),
+					alias($._kw_full, $.Literal),
+				),
 			),
 
 		PermissionsForClause: ($) =>
@@ -1160,7 +1375,11 @@ export default grammar({
 			seq(
 				alias($._analyzerFilterKw, $.Filter),
 				optional(
-					seq("(", choice(seq($.Number, ",", $.Number), $.Ident), ")"),
+					seq(
+						'(',
+						choice(seq($.Number, ',', $.Number), $.Ident),
+						')',
+					),
 				),
 			),
 
@@ -1217,13 +1436,20 @@ export default grammar({
 			),
 		_pathElement: ($) =>
 			choice($.Lookup, $.Subscript, alias($._pathFilter, $.Filter)),
-		Subscript: ($) => seq(optional($.Optional), ".", $._dotPart),
+		Subscript: ($) => seq(optional($.Optional), '.', $._dotPart),
 		_dotPart: ($) =>
-			choice($.At, $.Ident, $.IdiomFunction, alias("*", $.Any), $.Destructure, $.Recurse),
+			choice(
+				$.At,
+				$.Ident,
+				$.IdiomFunction,
+				alias('*', $.Any),
+				$.Destructure,
+				$.Recurse,
+			),
 
 		_pathFilter: ($) =>
 			seq(
-				"[",
+				'[',
 				choice(
 					$.WhereClause,
 					// `[? value]` shorthand — wrap in WhereClause to match lezer's
@@ -1231,9 +1457,9 @@ export default grammar({
 					alias($._questionWhere, $.WhereClause),
 					$._expression,
 				),
-				"]",
+				']',
 			),
-		_questionWhere: ($) => seq("?", $._value),
+		_questionWhere: ($) => seq('?', $._value),
 
 		Lookup: ($) =>
 			seq(
@@ -1243,7 +1469,7 @@ export default grammar({
 
 		LookupSelection: ($) =>
 			seq(
-				"(",
+				'(',
 				optional($.GraphFieldSelection),
 				csep($.GraphPredicate),
 				repeat(
@@ -1252,14 +1478,21 @@ export default grammar({
 						alias($.SplitClause, $.GraphSplitClause),
 						alias($.GroupClause, $.GraphGroupClause),
 						alias($.OrderClause, $.GraphOrderClause),
-						alias($.LimitStartComboClause, $.GraphLimitStartComboClause),
+						alias(
+							$.LimitStartComboClause,
+							$.GraphLimitStartComboClause,
+						),
 						seq(alias($._kw_as, $.Keyword), $.Ident),
 					),
 				),
-				")",
+				')',
 			),
 		GraphFieldSelection: ($) =>
-			seq(alias($._kw_select, $.Keyword), $.Fields, alias($._kw_from, $.Keyword)),
+			seq(
+				alias($._kw_select, $.Keyword),
+				$.Fields,
+				alias($._kw_from, $.Keyword),
+			),
 		GraphPredicate: ($) => choice($._value, $.Any),
 
 		Destructure: ($) =>
@@ -1284,7 +1517,7 @@ export default grammar({
 				$.RecurseRange,
 				optional($.RecurseOptions),
 				$.BraceClose,
-				optional(seq("(", repeat1($._pathElement), ")")),
+				optional(seq('(', repeat1($._pathElement), ')')),
 			),
 		RecurseRange: ($) =>
 			prec.right(
@@ -1299,23 +1532,23 @@ export default grammar({
 		RecurseOptions: ($) =>
 			repeat1(
 				seq(
-					"+",
+					'+',
 					alias($._rawident, $.FunctionName),
-					optional(seq("=", $._baseValue)),
+					optional(seq('=', $._baseValue)),
 				),
 			),
 
 		// Idiom
-		Idiom: ($) => seq($.Ident, repeat(seq(".", $.Ident))),
+		Idiom: ($) => seq($.Ident, repeat(seq('.', $.Ident))),
 
 		// Binary expression
 		BinaryExpression: ($) =>
-			prec.left("binary", seq($._value, $.Operator, $._value)),
+			prec.left('binary', seq($._value, $.Operator, $._value)),
 
 		// Range
 		Range: ($) =>
 			prec.left(
-				"range",
+				'range',
 				choice(
 					$.RangeOp,
 					seq($._value, $.RangeOp),
@@ -1325,7 +1558,7 @@ export default grammar({
 			),
 
 		// Type cast
-		TypeCast: ($) => seq("<", $._type, ">", $._baseValue),
+		TypeCast: ($) => seq('<', $._type, '>', $._baseValue),
 
 		// Closure
 		Closure: ($) =>
@@ -1338,13 +1571,15 @@ export default grammar({
 			),
 
 		ParamDefinition: ($) =>
-			seq($.VariableName, optional(seq($.Colon, alias($._safeType, $.Type)))),
+			seq(
+				$.VariableName,
+				optional(seq($.Colon, alias($._safeType, $.Type))),
+			),
 
 		// Block / SubQuery
-		Block: ($) =>
-			seq($.BraceOpen, optional($._expressions), $.BraceClose),
+		Block: ($) => seq($.BraceOpen, optional($._expressions), $.BraceClose),
 
-		SubQuery: ($) => seq("(", $._expression, ")"),
+		SubQuery: ($) => seq('(', $._expression, ')'),
 
 		// ----------------------------------------------------------------
 		// Object/Array/Set/Point
@@ -1360,20 +1595,20 @@ export default grammar({
 		ObjectProperty: ($) => seq($.ObjectKey, $.Colon, $._value),
 		ObjectKey: ($) => choice(alias($._rawident, $.KeyName), $.String),
 
-		Array: ($) => seq("[", optional(csepTrail($._value)), "]"),
+		Array: ($) => seq('[', optional(csepTrail($._value)), ']'),
 
 		Set: ($) =>
 			seq(
 				$.BraceOpen,
 				choice(
-					",",
-					seq($._value, ","),
-					seq($._value, ",", $._value, repeat(seq(",", $._value))),
+					',',
+					seq($._value, ','),
+					seq($._value, ',', $._value, repeat(seq(',', $._value))),
 				),
 				$.BraceClose,
 			),
 
-		Point: ($) => seq("(", $.Number, ",", $.Number, ")"),
+		Point: ($) => seq('(', $.Number, ',', $.Number, ')'),
 
 		// ----------------------------------------------------------------
 		// Record ID
@@ -1422,8 +1657,12 @@ export default grammar({
 				seq($.VariableName, $.ArgumentList),
 			),
 		ArgumentList: ($) =>
-			seq("(", optional(choice(csep($._value), $._subqueryStatement)), ")"),
-		Version: ($) => seq("<", $.VersionNumber, ">"),
+			seq(
+				'(',
+				optional(choice(csep($._value), $._subqueryStatement)),
+				')',
+			),
+		Version: ($) => seq('<', $.VersionNumber, '>'),
 
 		FunctionName: ($) =>
 			choice(
@@ -1432,16 +1671,16 @@ export default grammar({
 						3,
 						seq(
 							/[a-zA-Z_][a-zA-Z_0-9]*/,
-							"::",
+							'::',
 							/[a-zA-Z_][a-zA-Z_0-9]*/,
-							repeat(seq("::", /[a-zA-Z_][a-zA-Z_0-9]*/)),
+							repeat(seq('::', /[a-zA-Z_][a-zA-Z_0-9]*/)),
 						),
 					),
 				),
 				token(
 					prec(
 						3,
-						seq("fn", repeat(seq("::", /[a-zA-Z_][a-zA-Z_0-9]*/))),
+						seq('fn', repeat(seq('::', /[a-zA-Z_][a-zA-Z_0-9]*/))),
 					),
 				),
 			),
@@ -1470,7 +1709,7 @@ export default grammar({
 
 		FieldAssignment: ($) =>
 			seq($.Ident, alias($._assignmentOp, $.Operator), $._value),
-		_assignmentOp: ($) => choice("=", "+=", "-="),
+		_assignmentOp: ($) => choice('=', '+=', '-='),
 
 		// ----------------------------------------------------------------
 		// Fields & predicates
@@ -1482,8 +1721,11 @@ export default grammar({
 				csep($._inclusivePredicate),
 			),
 		Predicate: ($) =>
-			choice($._value, seq($._value, alias($._kw_as, $.Keyword), $.Ident)),
-		_inclusivePredicate: ($) => choice(alias("*", $.Any), $.Predicate),
+			choice(
+				$._value,
+				seq($._value, alias($._kw_as, $.Keyword), $.Ident),
+			),
+		_inclusivePredicate: ($) => choice(alias('*', $.Any), $.Predicate),
 
 		// ----------------------------------------------------------------
 		// Types
@@ -1495,25 +1737,18 @@ export default grammar({
 				$.ParameterizedType,
 				$.LiteralType,
 			),
-		ParameterizedType: ($) => seq($._singleType, "<", $._type, ">"),
-		_type: ($) =>
-			choice($._singleType, $.UnionType),
+		ParameterizedType: ($) => seq($._singleType, '<', $._type, '>'),
+		_type: ($) => choice($._singleType, $.UnionType),
 		UnionType: ($) =>
 			prec.right(
-				"union",
+				'union',
 				seq($._singleType, repeat1(seq($.Pipe, $._singleType))),
 			),
-		_safeType: ($) => choice($._singleType, seq("<", $._type, ">")),
+		_safeType: ($) => choice($._singleType, seq('<', $._type, '>')),
 
 		LiteralType: ($) =>
-			choice(
-				$.String,
-				$.Number,
-				$.Duration,
-				$.ArrayType,
-				$.ObjectType,
-			),
-		ArrayType: ($) => seq("[", csep($._type), "]"),
+			choice($.String, $.Number, $.Duration, $.ArrayType, $.ObjectType),
+		ArrayType: ($) => seq('[', csep($._type), ']'),
 		ObjectType: ($) =>
 			seq(
 				alias($._object_open, $.BraceOpen),
@@ -1530,33 +1765,44 @@ export default grammar({
 		Comment: ($) =>
 			token(
 				choice(
-					seq("#", /[^\n]*/),
-					seq("--", /[^\n]*/),
-					seq("//", /[^\n]*/),
+					seq('#', /[^\n]*/),
+					seq('--', /[^\n]*/),
+					seq('//', /[^\n]*/),
 				),
 			),
 
-		BlockComment: ($) => token(seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/")),
+		BlockComment: ($) => token(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
 
 		Number: ($) =>
-			seq(
-				optional(choice("-", "+")),
-				choice($.Decimal, $.Float, $.Int),
-			),
+			seq(optional(choice('-', '+')), choice($.Decimal, $.Float, $.Int)),
 
 		Int: ($) => token(/[0-9]+/),
 
 		Float: ($) =>
 			token(
 				choice(
-					seq(/[0-9]+/, choice(seq(".", /[0-9]+/, optional(/[eE][+-]?[0-9]+/)), /[eE][+-]?[0-9]+/), optional("f")),
-					"Infinity",
-					"NaN",
+					seq(
+						/[0-9]+/,
+						choice(
+							seq('.', /[0-9]+/, optional(/[eE][+-]?[0-9]+/)),
+							/[eE][+-]?[0-9]+/,
+						),
+						optional('f'),
+					),
+					'Infinity',
+					'NaN',
 				),
 			),
 
 		Decimal: ($) =>
-			token(seq(/[0-9]+/, optional(seq(".", /[0-9]+/)), optional(/[eE][+-]?[0-9]+/), "dec")),
+			token(
+				seq(
+					/[0-9]+/,
+					optional(seq('.', /[0-9]+/)),
+					optional(/[eE][+-]?[0-9]+/),
+					'dec',
+				),
+			),
 
 		String: ($) => choice($._stringLiteral, $._prefixedString),
 		// Lezer allows `\<newline>` and any other escape; we use [\s\S] to
@@ -1587,15 +1833,21 @@ export default grammar({
 				prec(
 					-1,
 					seq(
-						"/",
+						'/',
 						repeat1(
 							choice(
 								/[^/\\\n\[]/,
-								seq("\\", /[^\n]/),
-								seq("[", repeat(choice(/[^\n\\\]]/, seq("\\", /[^\n]/))), "]"),
+								seq('\\', /[^\n]/),
+								seq(
+									'[',
+									repeat(
+										choice(/[^\n\\\]]/, seq('\\', /[^\n]/)),
+									),
+									']',
+								),
 							),
 						),
-						optional(seq("/", /[dgimsuvy]*/)),
+						optional(seq('/', /[dgimsuvy]*/)),
 					),
 				),
 			),
@@ -1603,11 +1855,11 @@ export default grammar({
 		VariableName: ($) =>
 			token(
 				seq(
-					"$",
+					'$',
 					choice(
 						/[a-zA-Z_][a-zA-Z0-9_]*/,
-						seq("`", /[^`]+/, "`"),
-						seq("⟨", /[^⟩]+/, "⟩"),
+						seq('`', /[^`]+/, '`'),
+						seq('⟨', /[^⟩]+/, '⟩'),
 					),
 				),
 			),
@@ -1619,7 +1871,18 @@ export default grammar({
 				seq(
 					/[0-9]+/,
 					/\s*/,
-					choice("ns", "us", "µs", "ms", "s", "m", "h", "d", "w", "y"),
+					choice(
+						'ns',
+						'us',
+						'µs',
+						'ms',
+						's',
+						'm',
+						'h',
+						'd',
+						'w',
+						'y',
+					),
 				),
 			),
 
@@ -1647,13 +1910,18 @@ export default grammar({
 		Ident: ($) => $._idName,
 
 		_rawident: ($) => token(prec(-1, /[a-zA-Z_][a-zA-Z0-9_]*/)),
-		_tickIdent: ($) => token(seq("`", /[^`]+/, "`")),
-		_bracketIdent: ($) => token(seq("⟨", /[^⟩]+/, "⟩")),
+		_tickIdent: ($) => token(seq('`', /[^`]+/, '`')),
+		_bracketIdent: ($) => token(seq('⟨', /[^⟩]+/, '⟩')),
 		_numberident: ($) =>
 			token(choice(/[a-zA-Z_][a-zA-Z0-9_]*/, /[0-9][a-zA-Z0-9_]*/)),
 
 		VersionNumber: ($) =>
-			token(seq(/[0-9]+/, optional(seq(".", /[0-9]+/, optional(seq(".", /[0-9]+/)))))),
+			token(
+				seq(
+					/[0-9]+/,
+					optional(seq('.', /[0-9]+/, optional(seq('.', /[0-9]+/)))),
+				),
+			),
 
 		// ================================================================
 		// Visible token-as-node rules
@@ -1674,26 +1942,29 @@ export default grammar({
 				seq($._kw_is, $._kw_not),
 				alias($._kw_in, $.Keyword),
 				seq($._kw_not, alias($._kw_in, $.Keyword)),
-				seq("@", $.Number, "@"),
+				seq('@', $.Number, '@'),
 				seq(
-					"<|",
+					'<|',
 					$.Number,
 					optional(
 						seq(
-							",",
+							',',
 							choice(
 								$.Number,
 								$.Distance,
-								seq(alias($._kw_minkowski, $.Distance), $.Number),
+								seq(
+									alias($._kw_minkowski, $.Distance),
+									$.Number,
+								),
 							),
 						),
 					),
-					"|>",
+					'|>',
 				),
-				"-",
-				"=",
-				">",
-				"<",
+				'-',
+				'=',
+				'>',
+				'<',
 			),
 		_binary_op_keyword_hidden: ($) =>
 			choice(
@@ -1712,17 +1983,17 @@ export default grammar({
 				$._kw_outside,
 				$._kw_intersects,
 			),
-		RangeOp: ($) => choice("..", "..=", ">..", ">..="),
-		BraceOpen: ($) => "{",
-		BraceClose: ($) => "}",
-		Colon: ($) => ":",
-		Pipe: ($) => "|",
-		LookupRight: ($) => "->",
-		LookupLeft: ($) => choice("<-", "<~"),
-		LookupBoth: ($) => "<->",
-		Any: ($) => choice("?", "*"),
-		At: ($) => "@",
-		Optional: ($) => "?",
+		RangeOp: ($) => choice('..', '..=', '>..', '>..='),
+		BraceOpen: ($) => '{',
+		BraceClose: ($) => '}',
+		Colon: ($) => ':',
+		Pipe: ($) => '|',
+		LookupRight: ($) => '->',
+		LookupLeft: ($) => choice('<-', '<~'),
+		LookupBoth: ($) => '<->',
+		Any: ($) => choice('?', '*'),
+		At: ($) => '@',
+		Optional: ($) => '?',
 		Bool: ($) => choice($._kw_true, $._kw_false),
 		None: ($) => choice($._kw_null, $._kw_none),
 		Literal: ($) =>
@@ -1782,7 +2053,16 @@ export default grammar({
 			),
 
 		IndexTypeClause: ($) =>
-			choice($._kw_f32, $._kw_f64, $._kw_i16, $._kw_i32, $._kw_i64),
+			seq(
+				optional(alias($._kw_type, $.Keyword)),
+				choice(
+					alias($._kw_f32, $.Keyword),
+					alias($._kw_f64, $.Keyword),
+					alias($._kw_i16, $.Keyword),
+					alias($._kw_i32, $.Keyword),
+					alias($._kw_i64, $.Keyword),
+				),
+			),
 
 		// ================================================================
 		// Hidden token-source rules
@@ -1790,29 +2070,29 @@ export default grammar({
 
 		_binary_op_token: ($) =>
 			choice(
-				"&&",
-				"||",
-				"??",
-				"?:",
-				"!=",
-				"==",
-				"?=",
-				"*=",
-				"~",
-				"!~",
-				"*~",
-				"<=",
-				">=",
-				"+",
-				"+=",
-				"-=",
-				"*",
-				"×",
-				"/",
-				"÷",
-				"**",
-				"@@",
-				...["∋", "∌", "⊇", "⊃", "⊅", "∈", "∉", "⊆", "⊂", "⊄"],
+				'&&',
+				'||',
+				'??',
+				'?:',
+				'!=',
+				'==',
+				'?=',
+				'*=',
+				'~',
+				'!~',
+				'*~',
+				'<=',
+				'>=',
+				'+',
+				'+=',
+				'-=',
+				'*',
+				'×',
+				'/',
+				'÷',
+				'**',
+				'@@',
+				...['∋', '∌', '⊇', '⊃', '⊅', '∈', '∉', '⊆', '⊂', '⊄'],
 			),
 
 		_binary_op_keyword: ($) =>
@@ -1837,281 +2117,281 @@ export default grammar({
 		// Keyword tokens
 		// ================================================================
 
-		_kw_true: ($) => kw("true"),
-		_kw_false: ($) => kw("false"),
-		_kw_null: ($) => kw("null"),
-		_kw_none: ($) => kw("none"),
-		_kw_after: ($) => kw("after"),
-		_kw_before: ($) => kw("before"),
-		_kw_diff: ($) => kw("diff"),
-		_kw_full: ($) => kw("full"),
+		_kw_true: ($) => kw('true'),
+		_kw_false: ($) => kw('false'),
+		_kw_null: ($) => kw('null'),
+		_kw_none: ($) => kw('none'),
+		_kw_after: ($) => kw('after'),
+		_kw_before: ($) => kw('before'),
+		_kw_diff: ($) => kw('diff'),
+		_kw_full: ($) => kw('full'),
 
-		_kw_access: ($) => kw("access"),
-		_kw_algorithm: ($) => kw("algorithm"),
-		_kw_all: ($) => kw("all"),
-		_kw_alter: ($) => kw("alter"),
-		_kw_always: ($) => kw("always"),
-		_kw_analyzer: ($) => kw("analyzer"),
-		_kw_and: ($) => kw("and"),
-		_kw_any: ($) => kw("any"),
-		_kw_api: ($) => kw("api"),
-		_kw_as: ($) => kw("as"),
-		_kw_asc: ($) => kw("asc"),
-		_kw_assert: ($) => kw("assert"),
-		_kw_at: ($) => kw("at"),
-		_kw_async: ($) => kw("async"),
-		_kw_authenticate: ($) => kw("authenticate"),
-		_kw_auto: ($) => kw("auto"),
-		_kw_backend: ($) => kw("backend"),
-		_kw_begin: ($) => kw("begin"),
-		_kw_bm25: ($) => kw("bm25"),
-		_kw_break: ($) => kw("break"),
-		_kw_bucket: ($) => kw("bucket"),
-		_kw_by: ($) => kw("by"),
-		_kw_cancel: ($) => kw("cancel"),
-		_kw_capacity: ($) => kw("capacity"),
-		_kw_cascade: ($) => kw("cascade"),
-		_kw_changefeed: ($) => kw("changefeed"),
-		_kw_changes: ($) => kw("changes"),
-		_kw_collate: ($) => kw("collate"),
-		_kw_columns: ($) => kw("columns"),
-		_kw_comment: ($) => kw("comment"),
-		_kw_commit: ($) => kw("commit"),
-		_kw_computed: ($) => kw("computed"),
-		_kw_concurrently: ($) => kw("concurrently"),
-		_kw_config: ($) => kw("config"),
-		_kw_content: ($) => kw("content"),
-		_kw_continue: ($) => kw("continue"),
-		_kw_create: ($) => kw("create"),
-		_kw_database: ($) => kw("database"),
-		_kw_db: ($) => kw("db"),
-		_kw_default: ($) => kw("default"),
-		_kw_defer: ($) => kw("defer"),
-		_kw_define: ($) => kw("define"),
-		_kw_delete: ($) => kw("delete"),
-		_kw_desc: ($) => kw("desc"),
-		_kw_dimension: ($) => kw("dimension"),
-		_kw_dist: ($) => kw("dist"),
-		_kw_doc_ids_cache: ($) => kw("doc_ids_cache"),
-		_kw_doc_ids_order: ($) => kw("doc_ids_order"),
-		_kw_doc_lengths_cache: ($) => kw("doc_lengths_cache"),
-		_kw_doc_lengths_order: ($) => kw("doc_lengths_order"),
-		_kw_drop: ($) => kw("drop"),
-		_kw_duplicate: ($) => kw("duplicate"),
-		_kw_duration: ($) => kw("duration"),
-		_kw_efc: ($) => kw("efc"),
-		_kw_else: ($) => kw("else"),
-		_kw_end: ($) => kw("end"),
-		_kw_enforced: ($) => kw("enforced"),
-		_kw_event: ($) => kw("event"),
-		_kw_exclude: ($) => kw("exclude"),
-		_kw_exists: ($) => kw("exists"),
-		_kw_explain: ($) => kw("explain"),
-		_kw_expunge: ($) => kw("expunge"),
-		_kw_extend_candidates: ($) => kw("extend_candidates"),
-		_kw_fetch: ($) => kw("fetch"),
-		_kw_field: ($) => kw("field"),
-		_kw_fields: ($) => kw("fields"),
-		_kw_filters: ($) => kw("filters"),
-		_kw_flexible: ($) => kw("flexible"),
-		_kw_for: ($) => kw("for"),
-		_kw_from: ($) => kw("from"),
-		_kw_function: ($) => kw("function"),
-		_kw_functions: ($) => kw("functions"),
-		_kw_get: ($) => kw("get"),
-		_kw_graphql: ($) => kw("graphql"),
-		_kw_group: ($) => kw("group"),
-		_kw_highlights: ($) => kw("highlights"),
-		_kw_hnsw: ($) => kw("hnsw"),
-		_kw_if: ($) => kw("if"),
-		_kw_ignore: ($) => kw("ignore"),
-		_kw_in: ($) => kw("in"),
-		_kw_include: ($) => kw("include"),
-		_kw_index: ($) => kw("index"),
-		_kw_info: ($) => kw("info"),
-		_kw_insert: ($) => kw("insert"),
-		_kw_into: ($) => kw("into"),
-		_kw_is: ($) => kw("is"),
-		_kw_issuer: ($) => kw("issuer"),
-		_kw_jwt: ($) => kw("jwt"),
-		_kw_keep_pruned_connections: ($) => kw("keep_pruned_connections"),
-		_kw_key: ($) => kw("key"),
-		_kw_kill: ($) => kw("kill"),
-		_kw_let: ($) => kw("let"),
-		_kw_limit: ($) => kw("limit"),
-		_kw_live: ($) => kw("live"),
-		_kw_lm: ($) => kw("lm"),
-		_kw_m: ($) => kw("m"),
-		_kw_m0: ($) => kw("m0"),
-		_kw_merge: ($) => kw("merge"),
-		_kw_middleware: ($) => kw("middleware"),
-		_kw_mtree: ($) => kw("mtree"),
-		_kw_mtree_cache: ($) => kw("mtree_cache"),
-		_kw_namespace: ($) => kw("namespace"),
-		_kw_noindex: ($) => kw("noindex"),
-		_kw_normal: ($) => kw("normal"),
-		_kw_not: ($) => kw("not"),
-		_kw_ns: ($) => kw("ns"),
-		_kw_numeric: ($) => kw("numeric"),
-		_kw_omit: ($) => kw("omit"),
-		_kw_on: ($) => kw("on"),
-		_kw_only: ($) => kw("only"),
-		_kw_option: ($) => kw("option"),
-		_kw_or: ($) => kw("or"),
-		_kw_order: ($) => kw("order"),
-		_kw_out: ($) => kw("out"),
-		_kw_overwrite: ($) => kw("overwrite"),
-		_kw_parallel: ($) => kw("parallel"),
-		_kw_param: ($) => kw("param"),
-		_kw_passhash: ($) => kw("passhash"),
-		_kw_password: ($) => kw("password"),
-		_kw_patch: ($) => kw("patch"),
-		_kw_permissions: ($) => kw("permissions"),
-		_kw_post: ($) => kw("post"),
-		_kw_postings_cache: ($) => kw("postings_cache"),
-		_kw_postings_order: ($) => kw("postings_order"),
-		_kw_put: ($) => kw("put"),
-		_kw_readonly: ($) => kw("readonly"),
-		_kw_rebuild: ($) => kw("rebuild"),
-		_kw_record: ($) => kw("record"),
-		_kw_reference: ($) => kw("reference"),
-		_kw_reject: ($) => kw("reject"),
-		_kw_relate: ($) => kw("relate"),
-		_kw_relation: ($) => kw("relation"),
-		_kw_remove: ($) => kw("remove"),
-		_kw_replace: ($) => kw("replace"),
-		_kw_return: ($) => kw("return"),
-		_kw_roles: ($) => kw("roles"),
-		_kw_root: ($) => kw("root"),
-		_kw_sc: ($) => kw("sc"),
-		_kw_schemafull: ($) => kw("schemafull"),
-		_kw_schemaless: ($) => kw("schemaless"),
-		_kw_scope: ($) => kw("scope"),
-		_kw_search: ($) => kw("search"),
-		_kw_select: ($) => kw("select"),
-		_kw_session: ($) => kw("session"),
-		_kw_set: ($) => kw("set"),
-		_kw_show: ($) => kw("show"),
-		_kw_signin: ($) => kw("signin"),
-		_kw_signup: ($) => kw("signup"),
-		_kw_since: ($) => kw("since"),
-		_kw_sleep: ($) => kw("sleep"),
-		_kw_split: ($) => kw("split"),
-		_kw_start: ($) => kw("start"),
-		_kw_strict: ($) => kw("strict"),
-		_kw_structure: ($) => kw("structure"),
-		_kw_table: ($) => kw("table"),
-		_kw_tables: ($) => kw("tables"),
-		_kw_tb: ($) => kw("tb"),
-		_kw_tempfiles: ($) => kw("tempfiles"),
-		_kw_terms_cache: ($) => kw("terms_cache"),
-		_kw_terms_order: ($) => kw("terms_order"),
-		_kw_then: ($) => kw("then"),
-		_kw_throw: ($) => kw("throw"),
-		_kw_timeout: ($) => kw("timeout"),
-		_kw_to: ($) => kw("to"),
-		_kw_token: ($) => kw("token"),
-		_kw_tokenizers: ($) => kw("tokenizers"),
-		_kw_trace: ($) => kw("trace"),
-		_kw_transaction: ($) => kw("transaction"),
-		_kw_type: ($) => kw("type"),
-		_kw_unique: ($) => kw("unique"),
-		_kw_unset: ($) => kw("unset"),
-		_kw_update: ($) => kw("update"),
-		_kw_upsert: ($) => kw("upsert"),
-		_kw_url: ($) => kw("url"),
-		_kw_use: ($) => kw("use"),
-		_kw_user: ($) => kw("user"),
-		_kw_value: ($) => kw("value"),
-		_kw_values: ($) => kw("values"),
-		_kw_version: ($) => kw("version"),
-		_kw_when: ($) => kw("when"),
-		_kw_where: ($) => kw("where"),
-		_kw_with: ($) => kw("with"),
+		_kw_access: ($) => kw('access'),
+		_kw_algorithm: ($) => kw('algorithm'),
+		_kw_all: ($) => kw('all'),
+		_kw_alter: ($) => kw('alter'),
+		_kw_always: ($) => kw('always'),
+		_kw_analyzer: ($) => kw('analyzer'),
+		_kw_and: ($) => kw('and'),
+		_kw_any: ($) => kw('any'),
+		_kw_api: ($) => kw('api'),
+		_kw_as: ($) => kw('as'),
+		_kw_asc: ($) => kw('asc'),
+		_kw_assert: ($) => kw('assert'),
+		_kw_at: ($) => kw('at'),
+		_kw_async: ($) => kw('async'),
+		_kw_authenticate: ($) => kw('authenticate'),
+		_kw_auto: ($) => kw('auto'),
+		_kw_backend: ($) => kw('backend'),
+		_kw_begin: ($) => kw('begin'),
+		_kw_bm25: ($) => kw('bm25'),
+		_kw_break: ($) => kw('break'),
+		_kw_bucket: ($) => kw('bucket'),
+		_kw_by: ($) => kw('by'),
+		_kw_cancel: ($) => kw('cancel'),
+		_kw_capacity: ($) => kw('capacity'),
+		_kw_cascade: ($) => kw('cascade'),
+		_kw_changefeed: ($) => kw('changefeed'),
+		_kw_changes: ($) => kw('changes'),
+		_kw_collate: ($) => kw('collate'),
+		_kw_columns: ($) => kw('columns'),
+		_kw_comment: ($) => kw('comment'),
+		_kw_commit: ($) => kw('commit'),
+		_kw_computed: ($) => kw('computed'),
+		_kw_concurrently: ($) => kw('concurrently'),
+		_kw_config: ($) => kw('config'),
+		_kw_content: ($) => kw('content'),
+		_kw_continue: ($) => kw('continue'),
+		_kw_create: ($) => kw('create'),
+		_kw_database: ($) => kw('database'),
+		_kw_db: ($) => kw('db'),
+		_kw_default: ($) => kw('default'),
+		_kw_defer: ($) => kw('defer'),
+		_kw_define: ($) => kw('define'),
+		_kw_delete: ($) => kw('delete'),
+		_kw_desc: ($) => kw('desc'),
+		_kw_dimension: ($) => kw('dimension'),
+		_kw_dist: ($) => kw('dist'),
+		_kw_doc_ids_cache: ($) => kw('doc_ids_cache'),
+		_kw_doc_ids_order: ($) => kw('doc_ids_order'),
+		_kw_doc_lengths_cache: ($) => kw('doc_lengths_cache'),
+		_kw_doc_lengths_order: ($) => kw('doc_lengths_order'),
+		_kw_drop: ($) => kw('drop'),
+		_kw_duplicate: ($) => kw('duplicate'),
+		_kw_duration: ($) => kw('duration'),
+		_kw_efc: ($) => kw('efc'),
+		_kw_else: ($) => kw('else'),
+		_kw_end: ($) => kw('end'),
+		_kw_enforced: ($) => kw('enforced'),
+		_kw_event: ($) => kw('event'),
+		_kw_exclude: ($) => kw('exclude'),
+		_kw_exists: ($) => kw('exists'),
+		_kw_explain: ($) => kw('explain'),
+		_kw_expunge: ($) => kw('expunge'),
+		_kw_extend_candidates: ($) => kw('extend_candidates'),
+		_kw_fetch: ($) => kw('fetch'),
+		_kw_field: ($) => kw('field'),
+		_kw_fields: ($) => kw('fields'),
+		_kw_filters: ($) => kw('filters'),
+		_kw_flexible: ($) => kw('flexible'),
+		_kw_for: ($) => kw('for'),
+		_kw_from: ($) => kw('from'),
+		_kw_function: ($) => kw('function'),
+		_kw_functions: ($) => kw('functions'),
+		_kw_get: ($) => kw('get'),
+		_kw_graphql: ($) => kw('graphql'),
+		_kw_group: ($) => kw('group'),
+		_kw_highlights: ($) => kw('highlights'),
+		_kw_hnsw: ($) => kw('hnsw'),
+		_kw_if: ($) => kw('if'),
+		_kw_ignore: ($) => kw('ignore'),
+		_kw_in: ($) => kw('in'),
+		_kw_include: ($) => kw('include'),
+		_kw_index: ($) => kw('index'),
+		_kw_info: ($) => kw('info'),
+		_kw_insert: ($) => kw('insert'),
+		_kw_into: ($) => kw('into'),
+		_kw_is: ($) => kw('is'),
+		_kw_issuer: ($) => kw('issuer'),
+		_kw_jwt: ($) => kw('jwt'),
+		_kw_keep_pruned_connections: ($) => kw('keep_pruned_connections'),
+		_kw_key: ($) => kw('key'),
+		_kw_kill: ($) => kw('kill'),
+		_kw_let: ($) => kw('let'),
+		_kw_limit: ($) => kw('limit'),
+		_kw_live: ($) => kw('live'),
+		_kw_lm: ($) => kw('lm'),
+		_kw_m: ($) => kw('m'),
+		_kw_m0: ($) => kw('m0'),
+		_kw_merge: ($) => kw('merge'),
+		_kw_middleware: ($) => kw('middleware'),
+		_kw_mtree: ($) => kw('mtree'),
+		_kw_mtree_cache: ($) => kw('mtree_cache'),
+		_kw_namespace: ($) => kw('namespace'),
+		_kw_noindex: ($) => kw('noindex'),
+		_kw_normal: ($) => kw('normal'),
+		_kw_not: ($) => kw('not'),
+		_kw_ns: ($) => kw('ns'),
+		_kw_numeric: ($) => kw('numeric'),
+		_kw_omit: ($) => kw('omit'),
+		_kw_on: ($) => kw('on'),
+		_kw_only: ($) => kw('only'),
+		_kw_option: ($) => kw('option'),
+		_kw_or: ($) => kw('or'),
+		_kw_order: ($) => kw('order'),
+		_kw_out: ($) => kw('out'),
+		_kw_overwrite: ($) => kw('overwrite'),
+		_kw_parallel: ($) => kw('parallel'),
+		_kw_param: ($) => kw('param'),
+		_kw_passhash: ($) => kw('passhash'),
+		_kw_password: ($) => kw('password'),
+		_kw_patch: ($) => kw('patch'),
+		_kw_permissions: ($) => kw('permissions'),
+		_kw_post: ($) => kw('post'),
+		_kw_postings_cache: ($) => kw('postings_cache'),
+		_kw_postings_order: ($) => kw('postings_order'),
+		_kw_put: ($) => kw('put'),
+		_kw_readonly: ($) => kw('readonly'),
+		_kw_rebuild: ($) => kw('rebuild'),
+		_kw_record: ($) => kw('record'),
+		_kw_reference: ($) => kw('reference'),
+		_kw_reject: ($) => kw('reject'),
+		_kw_relate: ($) => kw('relate'),
+		_kw_relation: ($) => kw('relation'),
+		_kw_remove: ($) => kw('remove'),
+		_kw_replace: ($) => kw('replace'),
+		_kw_return: ($) => kw('return'),
+		_kw_roles: ($) => kw('roles'),
+		_kw_root: ($) => kw('root'),
+		_kw_sc: ($) => kw('sc'),
+		_kw_schemafull: ($) => kw('schemafull'),
+		_kw_schemaless: ($) => kw('schemaless'),
+		_kw_scope: ($) => kw('scope'),
+		_kw_search: ($) => kw('search'),
+		_kw_select: ($) => kw('select'),
+		_kw_session: ($) => kw('session'),
+		_kw_set: ($) => kw('set'),
+		_kw_show: ($) => kw('show'),
+		_kw_signin: ($) => kw('signin'),
+		_kw_signup: ($) => kw('signup'),
+		_kw_since: ($) => kw('since'),
+		_kw_sleep: ($) => kw('sleep'),
+		_kw_split: ($) => kw('split'),
+		_kw_start: ($) => kw('start'),
+		_kw_strict: ($) => kw('strict'),
+		_kw_structure: ($) => kw('structure'),
+		_kw_table: ($) => kw('table'),
+		_kw_tables: ($) => kw('tables'),
+		_kw_tb: ($) => kw('tb'),
+		_kw_tempfiles: ($) => kw('tempfiles'),
+		_kw_terms_cache: ($) => kw('terms_cache'),
+		_kw_terms_order: ($) => kw('terms_order'),
+		_kw_then: ($) => kw('then'),
+		_kw_throw: ($) => kw('throw'),
+		_kw_timeout: ($) => kw('timeout'),
+		_kw_to: ($) => kw('to'),
+		_kw_token: ($) => kw('token'),
+		_kw_tokenizers: ($) => kw('tokenizers'),
+		_kw_trace: ($) => kw('trace'),
+		_kw_transaction: ($) => kw('transaction'),
+		_kw_type: ($) => kw('type'),
+		_kw_unique: ($) => kw('unique'),
+		_kw_unset: ($) => kw('unset'),
+		_kw_update: ($) => kw('update'),
+		_kw_upsert: ($) => kw('upsert'),
+		_kw_url: ($) => kw('url'),
+		_kw_use: ($) => kw('use'),
+		_kw_user: ($) => kw('user'),
+		_kw_value: ($) => kw('value'),
+		_kw_values: ($) => kw('values'),
+		_kw_version: ($) => kw('version'),
+		_kw_when: ($) => kw('when'),
+		_kw_where: ($) => kw('where'),
+		_kw_with: ($) => kw('with'),
 
 		// Operator keywords
-		_kw_contains: ($) => kw("contains"),
-		_kw_containsnot: ($) => kw("containsnot"),
-		_kw_containsall: ($) => kw("containsall"),
-		_kw_containsany: ($) => kw("containsany"),
-		_kw_containsnone: ($) => kw("containsnone"),
-		_kw_inside: ($) => kw("inside"),
-		_kw_notinside: ($) => kw("notinside"),
-		_kw_allinside: ($) => kw("allinside"),
-		_kw_anyinside: ($) => kw("anyinside"),
-		_kw_noneinside: ($) => kw("noneinside"),
-		_kw_outside: ($) => kw("outside"),
-		_kw_intersects: ($) => kw("intersects"),
+		_kw_contains: ($) => kw('contains'),
+		_kw_containsnot: ($) => kw('containsnot'),
+		_kw_containsall: ($) => kw('containsall'),
+		_kw_containsany: ($) => kw('containsany'),
+		_kw_containsnone: ($) => kw('containsnone'),
+		_kw_inside: ($) => kw('inside'),
+		_kw_notinside: ($) => kw('notinside'),
+		_kw_allinside: ($) => kw('allinside'),
+		_kw_anyinside: ($) => kw('anyinside'),
+		_kw_noneinside: ($) => kw('noneinside'),
+		_kw_outside: ($) => kw('outside'),
+		_kw_intersects: ($) => kw('intersects'),
 
 		// Distance keywords
-		_kw_chebyshev: ($) => kw("chebyshev"),
-		_kw_cosine: ($) => kw("cosine"),
-		_kw_euclidean: ($) => kw("euclidean"),
-		_kw_hamming: ($) => kw("hamming"),
-		_kw_jaccard: ($) => kw("jaccard"),
-		_kw_manhattan: ($) => kw("manhattan"),
-		_kw_minkowski: ($) => kw("minkowski"),
-		_kw_pearson: ($) => kw("pearson"),
+		_kw_chebyshev: ($) => kw('chebyshev'),
+		_kw_cosine: ($) => kw('cosine'),
+		_kw_euclidean: ($) => kw('euclidean'),
+		_kw_hamming: ($) => kw('hamming'),
+		_kw_jaccard: ($) => kw('jaccard'),
+		_kw_manhattan: ($) => kw('manhattan'),
+		_kw_minkowski: ($) => kw('minkowski'),
+		_kw_pearson: ($) => kw('pearson'),
 
 		// Analyzer Filter keywords
-		_kw_ascii: ($) => kw("ascii"),
-		_kw_edgengram: ($) => kw("edgengram"),
-		_kw_ngram: ($) => kw("ngram"),
-		_kw_snowball: ($) => kw("snowball"),
-		_kw_uppercase: ($) => kw("uppercase"),
-		_kw_lowercase: ($) => kw("lowercase"),
+		_kw_ascii: ($) => kw('ascii'),
+		_kw_edgengram: ($) => kw('edgengram'),
+		_kw_ngram: ($) => kw('ngram'),
+		_kw_snowball: ($) => kw('snowball'),
+		_kw_uppercase: ($) => kw('uppercase'),
+		_kw_lowercase: ($) => kw('lowercase'),
 
 		// Analyzer Tokenizer keywords
-		_kw_blank: ($) => kw("blank"),
-		_kw_camel: ($) => kw("camel"),
-		_kw_class: ($) => kw("class"),
-		_kw_punct: ($) => kw("punct"),
+		_kw_blank: ($) => kw('blank'),
+		_kw_camel: ($) => kw('camel'),
+		_kw_class: ($) => kw('class'),
+		_kw_punct: ($) => kw('punct'),
 
 		// Token type keywords
-		_kw_jwks: ($) => kw("jwks"),
-		_kw_eddsa: ($) => kw("eddsa"),
-		_kw_es256: ($) => kw("es256"),
-		_kw_es384: ($) => kw("es384"),
-		_kw_es512: ($) => kw("es512"),
-		_kw_hs256: ($) => kw("hs256"),
-		_kw_hs384: ($) => kw("hs384"),
-		_kw_hs512: ($) => kw("hs512"),
-		_kw_ps256: ($) => kw("ps256"),
-		_kw_ps384: ($) => kw("ps384"),
-		_kw_ps512: ($) => kw("ps512"),
-		_kw_rs256: ($) => kw("rs256"),
-		_kw_rs384: ($) => kw("rs384"),
-		_kw_rs512: ($) => kw("rs512"),
+		_kw_jwks: ($) => kw('jwks'),
+		_kw_eddsa: ($) => kw('eddsa'),
+		_kw_es256: ($) => kw('es256'),
+		_kw_es384: ($) => kw('es384'),
+		_kw_es512: ($) => kw('es512'),
+		_kw_hs256: ($) => kw('hs256'),
+		_kw_hs384: ($) => kw('hs384'),
+		_kw_hs512: ($) => kw('hs512'),
+		_kw_ps256: ($) => kw('ps256'),
+		_kw_ps384: ($) => kw('ps384'),
+		_kw_ps512: ($) => kw('ps512'),
+		_kw_rs256: ($) => kw('rs256'),
+		_kw_rs384: ($) => kw('rs384'),
+		_kw_rs512: ($) => kw('rs512'),
 
 		// Index type keywords (f32/f64/i16/i32/i64)
-		_kw_f32: ($) => kw("f32"),
-		_kw_f64: ($) => kw("f64"),
-		_kw_i16: ($) => kw("i16"),
-		_kw_i32: ($) => kw("i32"),
-		_kw_i64: ($) => kw("i64"),
+		_kw_f32: ($) => kw('f32'),
+		_kw_f64: ($) => kw('f64'),
+		_kw_i16: ($) => kw('i16'),
+		_kw_i32: ($) => kw('i32'),
+		_kw_i64: ($) => kw('i64'),
 
-		_kw_rand: ($) => kw("rand"),
-		_kw_count: ($) => kw("count"),
+		_kw_rand: ($) => kw('rand'),
+		_kw_count: ($) => kw('count'),
 
 		// Misc
-		_kw_owner: ($) => kw("owner"),
-		_kw_editor: ($) => kw("editor"),
-		_kw_viewer: ($) => kw("viewer"),
-		_kw_refresh: ($) => kw("refresh"),
-		_kw_bearer: ($) => kw("bearer"),
-		_kw_grant: ($) => kw("grant"),
-		_kw_module: ($) => kw("module"),
-		_kw_purge: ($) => kw("purge"),
-		_kw_revoke: ($) => kw("revoke"),
-		_kw_revoked: ($) => kw("revoked"),
-		_kw_expired: ($) => kw("expired"),
-		_kw_sequence: ($) => kw("sequence"),
-		_kw_batch: ($) => kw("batch"),
-		_kw_matches: ($) => kw("matches"),
-		_kw_original: ($) => kw("original"),
-		_kw_future: ($) => kw("future"),
-		_kw_import: ($) => kw("import"),
-		_kw_fulltext: ($) => kw("fulltext"),
+		_kw_owner: ($) => kw('owner'),
+		_kw_editor: ($) => kw('editor'),
+		_kw_viewer: ($) => kw('viewer'),
+		_kw_refresh: ($) => kw('refresh'),
+		_kw_bearer: ($) => kw('bearer'),
+		_kw_grant: ($) => kw('grant'),
+		_kw_module: ($) => kw('module'),
+		_kw_purge: ($) => kw('purge'),
+		_kw_revoke: ($) => kw('revoke'),
+		_kw_revoked: ($) => kw('revoked'),
+		_kw_expired: ($) => kw('expired'),
+		_kw_sequence: ($) => kw('sequence'),
+		_kw_batch: ($) => kw('batch'),
+		_kw_matches: ($) => kw('matches'),
+		_kw_original: ($) => kw('original'),
+		_kw_future: ($) => kw('future'),
+		_kw_import: ($) => kw('import'),
+		_kw_fulltext: ($) => kw('fulltext'),
 
 		// Catch-all keyword union, used by visible Keyword rule
 		_any_kw: ($) =>

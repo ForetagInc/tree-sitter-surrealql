@@ -846,6 +846,43 @@ DEFINE INDEX idx_vec ON TABLE person FIELDS embedding HNSW DIMENSION 3
           (Number
             (Int)))))))
 
+=====================================
+define :: Define index hnsw with type
+=====================================
+
+DEFINE INDEX OVERWRITE documents_vec_index ON TABLE documents FIELDS embedding HNSW DIMENSION 4 DIST COSINE TYPE F32
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (OverwriteClause
+      (Keyword))
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (HnswClause
+        (Keyword)
+        (IndexDimensionClause
+          (Keyword)
+          (Number
+            (Int)))
+        (HnswDistClause
+          (Keyword)
+          (Distance))
+        (IndexTypeClause
+          (Keyword)
+          (Keyword))))))
+
 =========================
 define :: Define function
 =========================

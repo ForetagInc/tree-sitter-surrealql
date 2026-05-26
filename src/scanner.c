@@ -1,10 +1,14 @@
 #include "tree_sitter/parser.h"
 #include <stdbool.h>
 #include <stdint.h>
+
+#if defined(__wasm__) || defined(__WASM__)
+#define DBG(...) ((void)0)
+#else
 #include <stdio.h>
 #include <stdlib.h>
-
 #define DBG(...) do { if (getenv("TSDBG")) fprintf(stderr, __VA_ARGS__); } while (0)
+#endif
 
 // External tokens emitted by the SurrealQL scanner.
 // Must stay in sync with the `externals:` declaration in grammar.js.

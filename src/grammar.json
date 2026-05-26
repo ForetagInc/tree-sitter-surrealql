@@ -11664,27 +11664,74 @@
       ]
     },
     "IndexTypeClause": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "_kw_f32"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_type"
+              },
+              "named": true,
+              "value": "Keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
-          "type": "SYMBOL",
-          "name": "_kw_f64"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_kw_i16"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_kw_i32"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_kw_i64"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_f32"
+              },
+              "named": true,
+              "value": "Keyword"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_f64"
+              },
+              "named": true,
+              "value": "Keyword"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_i16"
+              },
+              "named": true,
+              "value": "Keyword"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_i32"
+              },
+              "named": true,
+              "value": "Keyword"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_kw_i64"
+              },
+              "named": true,
+              "value": "Keyword"
+            }
+          ]
         }
       ]
     },

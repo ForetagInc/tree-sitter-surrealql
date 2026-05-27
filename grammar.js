@@ -67,7 +67,7 @@ export default grammar({
 	],
 
 	precedences: ($) => [
-		['range', 'method', 'binary', 'union', 'filter', 'for', 'clause'],
+		['prefix', 'range', 'method', 'binary', 'union', 'filter', 'for', 'clause'],
 	],
 
 	conflicts: ($) => [[$.RecordId, $.RecordIdRange], [$.WhereClause]],
@@ -1400,7 +1400,21 @@ export default grammar({
 		// ================================================================
 
 		_value: ($) =>
-			choice($.Path, $.BinaryExpression, $.Range, $._baseValue),
+			choice(
+				$.Path,
+				$.BinaryExpression,
+				$.Range,
+				$.PrefixExpression,
+				$._baseValue,
+			),
+
+		PrefixExpression: ($) =>
+			prec(
+				'prefix',
+				seq(alias('!', $.Operator), $._prefixOperand),
+			),
+		_prefixOperand: ($) =>
+			choice($.PrefixExpression, $.Path, $._baseValue),
 
 		_baseValue: ($) =>
 			choice(

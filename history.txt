@@ -1,0 +1,19 @@
+#V2
+SELECT * FROM event WHERE !external_url
+SELECT * FROM event WHERE !$external_url
+SELECT * FROM event WHERE !external_url;
+SELECT * FROM event WHERE !$external_url;
+SELECT !external_url FROM { external_url: true };
+SELECT !$external_url FROM { external_url: true };
+SELECT !!external_url FROM { external_url: true };
+SELECT NOT(external_url) FROM { external_url: true };
+CREATE event:1 SET external_url = "https://x.com", slug = "a";
+SELECT VALUE slug FROM event WHERE !external_url;
+SELECT VALUE slug FROM event WHERE !$external_url;
+SELECT -external_url FROM { external_url: 1 };
+CREATE event:1 SET external_url = NONE, slug = "a";
+CREATE event:2 SET external_url = "x", slug = "b";
+SELECT VALUE slug FROM event WHERE !external_url = true;
+SELECT VALUE slug FROM event WHERE !external_url;
+SELECT !foo.bar FROM { foo: { bar: true } };
+SELECT !!foo FROM { foo: true };

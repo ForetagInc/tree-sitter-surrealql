@@ -755,3 +755,60 @@ subqueries :: Subquery with create
     (CreateStatement
       (Keyword)
       (Ident))))
+
+======================================
+operators :: Prefix not on field
+======================================
+
+SELECT * FROM event WHERE !external_url
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (PrefixExpression
+        (Operator)
+        (Ident)))))
+
+==========================================
+operators :: Prefix not on parameter
+==========================================
+
+SELECT * FROM event WHERE !$external_url
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (PrefixExpression
+        (Operator)
+        (VariableName)))))
+
+======================================
+operators :: Chained prefix not
+======================================
+
+!!external_url
+
+---
+
+(SurrealQL
+  (PrefixExpression
+    (Operator)
+    (PrefixExpression
+      (Operator)
+      (Ident))))

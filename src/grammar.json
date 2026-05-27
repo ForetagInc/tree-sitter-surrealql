@@ -8173,6 +8173,49 @@
         },
         {
           "type": "SYMBOL",
+          "name": "PrefixExpression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_baseValue"
+        }
+      ]
+    },
+    "PrefixExpression": {
+      "type": "PREC",
+      "value": "prefix",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "STRING",
+              "value": "!"
+            },
+            "named": true,
+            "value": "Operator"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_prefixOperand"
+          }
+        ]
+      }
+    },
+    "_prefixOperand": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "PrefixExpression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "Path"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_baseValue"
         }
       ]
@@ -13770,6 +13813,10 @@
   ],
   "precedences": [
     [
+      {
+        "type": "STRING",
+        "value": "prefix"
+      },
       {
         "type": "STRING",
         "value": "range"

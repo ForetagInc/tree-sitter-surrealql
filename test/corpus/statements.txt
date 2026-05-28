@@ -1,0 +1,4074 @@
+==========================
+alter :: Alter table basic
+==========================
+
+ALTER TABLE person
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+alter :: Alter table drop
+=========================
+
+ALTER TABLE person DROP
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+===============================
+alter :: Alter table schemafull
+===============================
+
+ALTER TABLE person SCHEMAFULL
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+===============================
+alter :: Alter table schemaless
+===============================
+
+ALTER TABLE person SCHEMALESS
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+=================================
+alter :: Alter table with comment
+=================================
+
+ALTER TABLE person COMMENT "Updated table"
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (CommentClause
+      (Keyword)
+      (String))))
+
+==========================================
+alter :: Alter table with permissions none
+==========================================
+
+ALTER TABLE person PERMISSIONS NONE
+
+---
+
+(SurrealQL
+  (AlterStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (PermissionsForClause
+      (Keyword)
+      (None))))
+
+=================================
+break-continue :: Break statement
+=================================
+
+BREAK
+
+---
+
+(SurrealQL
+  (BreakStatement
+    (Keyword)))
+
+====================================
+break-continue :: Continue statement
+====================================
+
+CONTINUE
+
+---
+
+(SurrealQL
+  (ContinueStatement
+    (Keyword)))
+
+=======================
+create :: Simple create
+=======================
+
+CREATE person
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)))
+
+=====================
+create :: Create ONLY
+=====================
+
+CREATE ONLY person
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+create :: Create with SET
+=========================
+
+CREATE person SET name = "Tobie", age = 30
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String))
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+=============================
+create :: Create with CONTENT
+=============================
+
+CREATE person CONTENT {name: "Tobie", age: 30}
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (ContentClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String))
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (Number
+              (Int))))
+        (BraceClose)))))
+
+===================================
+create :: Create with RETURN fields
+===================================
+
+CREATE person SET name = "Tobie" RETURN name
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (ReturnClause
+      (Keyword)
+      (Fields
+        (Predicate
+          (Ident))))))
+
+==================================
+create :: Create with RETURN AFTER
+==================================
+
+CREATE person SET name = "Tobie" RETURN AFTER
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+===================================
+create :: Create with RETURN BEFORE
+===================================
+
+CREATE person SET name = "Tobie" RETURN BEFORE
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+=================================
+create :: Create with RETURN DIFF
+=================================
+
+CREATE person SET name = "Tobie" RETURN DIFF
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+=============================
+create :: Create with TIMEOUT
+=============================
+
+CREATE person SET name = "Tobie" TIMEOUT 5s
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (TimeoutClause
+      (Keyword)
+      (Duration
+        (DurationPart)))))
+
+==============================
+create :: Create with PARALLEL
+==============================
+
+CREATE person SET name = "Tobie" PARALLEL
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))
+    (ParallelClause
+      (Keyword))))
+
+======================================
+create :: Create with record ID target
+======================================
+
+CREATE person:tobie
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+======================================================
+create :: Create with range record ID target
+======================================================
+
+CREATE |node:1..10|
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (RangeRecordId
+      (Pipe)
+      (RecordId
+        (RecordTbIdent)
+        (Colon)
+        (RecordIdRange
+          (RecordIdIdent)
+          (RangeOp)
+          (RecordIdIdent)))
+      (Pipe))))
+
+=====================================
+create :: Create with variable target
+=====================================
+
+CREATE $table
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (VariableName)))
+
+=================================
+create :: Create multiple targets
+=================================
+
+CREATE person, animal
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (Ident)))
+
+==========================
+define :: Define namespace
+==========================
+
+DEFINE NAMESPACE test
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+========================================
+define :: Define namespace if not exists
+========================================
+
+DEFINE NAMESPACE IF NOT EXISTS test
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (IfNotExistsClause
+      (Keyword)
+      (Keyword)
+      (Keyword))
+    (Ident)))
+
+====================================
+define :: Define namespace overwrite
+====================================
+
+DEFINE NAMESPACE OVERWRITE test
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (OverwriteClause
+      (Keyword))
+    (Ident)))
+
+=========================
+define :: Define database
+=========================
+
+DEFINE DATABASE test
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=====================
+define :: Define user
+=====================
+
+DEFINE USER tobie ON ROOT PASSWORD "secret" ROLES owner
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnRootNsDbClause
+      (Keyword)
+      (Keyword))
+    (Keyword)
+    (String)
+    (Keyword)
+    (Ident)))
+
+======================
+define :: Define event
+======================
+
+DEFINE EVENT myevent ON TABLE person WHEN $event = "CREATE" THEN (CREATE log)
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (WhenClause
+      (Keyword)
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (String)))
+    (ThenClause
+      (Keyword)
+      (SubQuery
+        (CreateStatement
+          (Keyword)
+          (Ident))))))
+
+=================================
+define :: Define event with async
+=================================
+
+DEFINE EVENT e ON TABLE file WHEN $event = 'DELETE' ASYNC THEN { };
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (WhenClause
+      (Keyword)
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (String)))
+    (ThenClause
+      (Keyword)
+      (Keyword)
+      (Block
+        (BraceOpen)
+        (BraceClose)))))
+
+======================
+define :: Define field
+======================
+
+DEFINE FIELD name ON TABLE person TYPE string
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))))
+
+===================================
+define :: Define field with default
+===================================
+
+DEFINE FIELD age ON TABLE person TYPE number DEFAULT 0
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))
+    (DefaultClause
+      (Keyword)
+      (Number
+        (Int)))))
+
+==================================
+define :: Define field with assert
+==================================
+
+DEFINE FIELD email ON TABLE person TYPE string ASSERT $value != NONE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))
+    (AssertClause
+      (Keyword)
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (None)))))
+
+===============================
+define :: Define field readonly
+===============================
+
+DEFINE FIELD created ON TABLE person TYPE datetime READONLY
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))
+    (ReadonlyClause
+      (Keyword))))
+
+====================================
+define :: Define field flexible type
+====================================
+
+DEFINE FIELD data ON TABLE person FLEXIBLE TYPE object
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (Keyword)
+      (TypeName))))
+
+=======================================
+define :: Define field with permissions
+=======================================
+
+DEFINE FIELD secret ON TABLE person TYPE string PERMISSIONS FOR select, create WHERE $auth.admin = true
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))
+    (PermissionsForClause
+      (Keyword)
+      (PermissionGroup
+        (Keyword)
+        (Keyword)
+        (Keyword)
+        (WhereClause
+          (Keyword)
+          (BinaryExpression
+            (Path
+              (VariableName)
+              (Subscript
+                (Ident)))
+            (Operator)
+            (Bool)))))))
+
+=====================================
+define :: Define field with reference
+=====================================
+
+DEFINE FIELD author ON TABLE post TYPE record REFERENCE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName))
+    (ReferenceClause
+      (Keyword))))
+
+====================================
+define :: Define field with computed
+====================================
+
+DEFINE FIELD fullname ON TABLE person COMPUTED $value.first + " " + $value.last
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (ComputedClause
+      (Keyword)
+      (BinaryExpression
+        (BinaryExpression
+          (Path
+            (VariableName)
+            (Subscript
+              (Ident)))
+          (Operator)
+          (String))
+        (Operator)
+        (Path
+          (VariableName)
+          (Subscript
+            (Ident)))))))
+
+=============================
+define :: Define index unique
+=============================
+
+DEFINE INDEX idx_email ON TABLE person FIELDS email UNIQUE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (UniqueClause
+        (Keyword)))))
+
+======================================
+define :: Define index search analyzer
+======================================
+
+DEFINE INDEX idx_search ON TABLE person FIELDS name SEARCH ANALYZER my_analyzer BM25
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (SearchAnalyzerClause
+        (Keyword)
+        (Keyword)
+        (Ident)
+        (Bm25Clause
+          (Keyword))))))
+
+============================
+define :: Define index mtree
+============================
+
+DEFINE INDEX idx_vec ON TABLE person FIELDS embedding MTREE DIMENSION 3
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (MtreeClause
+        (Keyword)
+        (IndexDimensionClause
+          (Keyword)
+          (Number
+            (Int)))))))
+
+===========================
+define :: Define index hnsw
+===========================
+
+DEFINE INDEX idx_vec ON TABLE person FIELDS embedding HNSW DIMENSION 3
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (HnswClause
+        (Keyword)
+        (IndexDimensionClause
+          (Keyword)
+          (Number
+            (Int)))))))
+
+=====================================
+define :: Define index hnsw with type
+=====================================
+
+DEFINE INDEX OVERWRITE documents_vec_index ON TABLE documents FIELDS embedding HNSW DIMENSION 4 DIST COSINE TYPE F32
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (OverwriteClause
+      (Keyword))
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (FieldsColumnsClause
+      (Keyword)
+      (Idiom
+        (Ident)))
+    (IndexClause
+      (HnswClause
+        (Keyword)
+        (IndexDimensionClause
+          (Keyword)
+          (Number
+            (Int)))
+        (HnswDistClause
+          (Keyword)
+          (Distance))
+        (IndexTypeClause
+          (Keyword)
+          (Keyword))))))
+
+=========================
+define :: Define function
+=========================
+
+DEFINE FUNCTION fn::greet($name: string) {
+	RETURN "Hello, " + $name + "!";
+}
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (FunctionName)
+    (ParamDefinition
+      (VariableName)
+      (Colon)
+      (Type
+        (TypeName)))
+    (Block
+      (BraceOpen)
+      (ReturnStatement
+        (Keyword)
+        (BinaryExpression
+          (BinaryExpression
+            (String)
+            (Operator)
+            (VariableName))
+          (Operator)
+          (String)))
+      (BraceClose))))
+
+======================
+define :: Define param
+======================
+
+DEFINE PARAM $endpointBase VALUE "https://dummyjson.com"
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (VariableName)
+    (Keyword)
+    (String)))
+
+======================
+define :: Define table
+======================
+
+DEFINE TABLE person
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=================================
+define :: Define table schemafull
+=================================
+
+DEFINE TABLE person SCHEMAFULL
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+=================================
+define :: Define table schemaless
+=================================
+
+DEFINE TABLE person SCHEMALESS
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+===========================
+define :: Define table drop
+===========================
+
+DEFINE TABLE person DROP
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+====================================
+define :: Define table type relation
+====================================
+
+DEFINE TABLE knows TYPE RELATION IN person OUT person
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (TableTypeClause
+      (Keyword)
+      (Keyword)
+      (Keyword)
+      (Ident)
+      (Keyword)
+      (Ident))))
+
+==================================
+define :: Define table type normal
+==================================
+
+DEFINE TABLE person TYPE NORMAL
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (TableTypeClause
+      (Keyword)
+      (Keyword))))
+
+===============================
+define :: Define table type any
+===============================
+
+DEFINE TABLE person TYPE ANY
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (TableTypeClause
+      (Keyword)
+      (Keyword))))
+
+==============================
+define :: Define table as view
+==============================
+
+DEFINE TABLE adult AS SELECT * FROM person WHERE age > 18
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (TableViewClause
+      (Keyword)
+      (Keyword)
+      (Any)
+      (Keyword)
+      (Ident)
+      (WhereClause
+        (Keyword)
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))))))
+
+======================================
+define :: Define table with changefeed
+======================================
+
+DEFINE TABLE person CHANGEFEED 1d
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (ChangefeedClause
+      (Keyword)
+      (Duration
+        (DurationPart)))))
+
+============================================
+define :: Define table with permissions none
+============================================
+
+DEFINE TABLE person PERMISSIONS NONE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (PermissionsForClause
+      (Keyword)
+      (None))))
+
+===================================
+define :: Define table with comment
+===================================
+
+DEFINE TABLE person COMMENT "People table"
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (CommentClause
+      (Keyword)
+      (String))))
+
+===================================
+define :: Define access on database
+===================================
+
+DEFINE ACCESS myaccess ON DATABASE TYPE RECORD SIGNUP (CREATE user SET email = $email) SIGNIN (SELECT * FROM user WHERE email = $email)
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (AccessDefinition
+      (Keyword)
+      (Ident)
+      (OnRootNsDbClause
+        (Keyword)
+        (Keyword))
+      (AccessTypeClause
+        (Keyword)
+        (Keyword)
+        (SignupClause
+          (Keyword)
+          (SubQuery
+            (CreateStatement
+              (Keyword)
+              (Ident)
+              (SetClause
+                (Keyword)
+                (FieldAssignment
+                  (Ident)
+                  (Operator)
+                  (VariableName))))))
+        (SigninClause
+          (Keyword)
+          (SubQuery
+            (SelectStatement
+              (Keyword)
+              (Fields
+                (Any))
+              (Keyword)
+              (Ident)
+              (WhereClause
+                (Keyword)
+                (BinaryExpression
+                  (Ident)
+                  (Operator)
+                  (VariableName))))))))))
+
+===============================
+define :: Define config graphql
+===============================
+
+DEFINE CONFIG GRAPHQL AUTO
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+=======================
+define :: Define bucket
+=======================
+
+DEFINE BUCKET mybucket
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+======================
+define :: Define scope
+======================
+
+DEFINE SCOPE account SESSION 24h SIGNUP (CREATE user SET email = $email) SIGNIN (SELECT * FROM user WHERE email = $email)
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (ScopeDefinition
+      (Keyword)
+      (Ident)
+      (SessionClause
+        (Keyword)
+        (Duration
+          (DurationPart)))
+      (SignupClause
+        (Keyword)
+        (SubQuery
+          (CreateStatement
+            (Keyword)
+            (Ident)
+            (SetClause
+              (Keyword)
+              (FieldAssignment
+                (Ident)
+                (Operator)
+                (VariableName))))))
+      (SigninClause
+        (Keyword)
+        (SubQuery
+          (SelectStatement
+            (Keyword)
+            (Fields
+              (Any))
+            (Keyword)
+            (Ident)
+            (WhereClause
+              (Keyword)
+              (BinaryExpression
+                (Ident)
+                (Operator)
+                (VariableName)))))))))
+
+=======================
+delete :: Simple delete
+=======================
+
+DELETE person
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)))
+
+=====================
+delete :: Delete ONLY
+=====================
+
+DELETE ONLY person:tobie
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+===========================
+delete :: Delete with WHERE
+===========================
+
+DELETE person WHERE age < 18
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+===================================
+delete :: Delete with RETURN BEFORE
+===================================
+
+DELETE person RETURN BEFORE
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+=============================
+delete :: Delete with TIMEOUT
+=============================
+
+DELETE person TIMEOUT 5s
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)
+    (TimeoutClause
+      (Keyword)
+      (Duration
+        (DurationPart)))))
+
+==============================
+delete :: Delete with PARALLEL
+==============================
+
+DELETE person PARALLEL
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)
+    (ParallelClause
+      (Keyword))))
+
+==========================
+delete :: Delete record ID
+==========================
+
+DELETE person:tobie
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+======================================
+delete :: Delete with WHERE and RETURN
+======================================
+
+DELETE person WHERE active = false RETURN DIFF
+
+---
+
+(SurrealQL
+  (DeleteStatement
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Bool)))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+==========================
+for :: For loop with array
+==========================
+
+FOR $item IN [1, 2, 3] {
+	CREATE item SET value = $item;
+}
+
+---
+
+(SurrealQL
+  (ForStatement
+    (Keyword)
+    (VariableName)
+    (Keyword)
+    (Array
+      (Number
+        (Int))
+      (Number
+        (Int))
+      (Number
+        (Int)))
+    (Block
+      (BraceOpen)
+      (CreateStatement
+        (Keyword)
+        (Ident)
+        (SetClause
+          (Keyword)
+          (FieldAssignment
+            (Ident)
+            (Operator)
+            (VariableName))))
+      (BraceClose))))
+
+=============================
+for :: For loop with variable
+=============================
+
+FOR $item IN $list {
+	UPDATE item SET value = $item;
+}
+
+---
+
+(SurrealQL
+  (ForStatement
+    (Keyword)
+    (VariableName)
+    (Keyword)
+    (VariableName)
+    (Block
+      (BraceOpen)
+      (UpdateStatement
+        (Keyword)
+        (Ident)
+        (SetClause
+          (Keyword)
+          (FieldAssignment
+            (Ident)
+            (Operator)
+            (VariableName))))
+      (BraceClose))))
+
+======================================================
+for :: For loop with unparenthesized select
+======================================================
+
+FOR $node IN SELECT * FROM node {
+	LET $next = type::record("node", $node.id.id() + 1);
+	RELATE $node->edge->$next SET read = rand::bool();
+}
+
+---
+
+(SurrealQL
+  (ForStatement
+    (Keyword)
+    (VariableName)
+    (Keyword)
+    (SelectStatement
+      (Keyword)
+      (Fields
+        (Any))
+      (Keyword)
+      (Ident))
+    (Block
+      (BraceOpen)
+      (LetStatement
+        (Keyword)
+        (ParamDefinition
+          (VariableName))
+        (FunctionCall
+          (FunctionName)
+          (ArgumentList
+            (String)
+            (BinaryExpression
+              (Path
+                (VariableName)
+                (Subscript
+                  (Ident))
+                (Subscript
+                  (IdiomFunction
+                    (FunctionName)
+                    (ArgumentList))))
+              (Operator)
+              (Number
+                (Int))))))
+      (RelateStatement
+        (Keyword)
+        (VariableName)
+        (LookupRight)
+        (Ident)
+        (LookupRight)
+        (VariableName)
+        (SetClause
+          (Keyword)
+          (FieldAssignment
+            (Ident)
+            (Operator)
+            (FunctionCall
+              (FunctionName)
+              (ArgumentList)))))
+      (BraceClose))))
+
+====================
+if-else :: Modern if
+====================
+
+IF $age > 18 { RETURN "adult" }
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Modern
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose)))))
+
+=========================
+if-else :: Modern if else
+=========================
+
+IF $age > 18 { RETURN "adult" } ELSE { RETURN "minor" }
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Modern
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose))
+      (Keyword)
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose)))))
+
+=================================
+if-else :: Modern if else if else
+=================================
+
+IF $age > 65 { RETURN "senior" } ELSE IF $age > 18 { RETURN "adult" } ELSE { RETURN "minor" }
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Modern
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose))
+      (Keyword)
+      (Keyword)
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose))
+      (Keyword)
+      (Block
+        (BraceOpen)
+        (ReturnStatement
+          (Keyword)
+          (String))
+        (BraceClose)))))
+
+=============================
+if-else :: Legacy if then end
+=============================
+
+IF $age > 18 THEN (RETURN "adult") END
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Legacy
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword))))
+
+==================================
+if-else :: Legacy if then else end
+==================================
+
+IF $age > 18 THEN (RETURN "adult") ELSE (RETURN "minor") END
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Legacy
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword))))
+
+===============================================
+if-else :: Legacy if then else if then else end
+===============================================
+
+IF $age > 65 THEN (RETURN "senior") ELSE IF $age > 18 THEN (RETURN "adult") ELSE (RETURN "minor") END
+
+---
+
+(SurrealQL
+  (IfElseStatement
+    (Keyword)
+    (Legacy
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword)
+      (Keyword)
+      (BinaryExpression
+        (VariableName)
+        (Operator)
+        (Number
+          (Int)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword)
+      (SubQuery
+        (ReturnStatement
+          (Keyword)
+          (String)))
+      (Keyword))))
+
+=====================
+info :: Info for root
+=====================
+
+INFO FOR ROOT
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+==========================
+info :: Info for namespace
+==========================
+
+INFO FOR NS
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+====================================
+info :: Info for namespace long form
+====================================
+
+INFO FOR NAMESPACE
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+=========================
+info :: Info for database
+=========================
+
+INFO FOR DB
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+===================================
+info :: Info for database long form
+===================================
+
+INFO FOR DATABASE
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)))
+
+======================
+info :: Info for scope
+======================
+
+INFO FOR SCOPE myaccount
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+======================
+info :: Info for table
+======================
+
+INFO FOR TABLE person
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=====================================
+info :: Info for table with structure
+=====================================
+
+INFO FOR TABLE person STRUCTURE
+
+---
+
+(SurrealQL
+  (InfoForStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)))
+
+============================
+insert :: Insert with object
+============================
+
+INSERT INTO person {name: "Tobie"}
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Object
+      (BraceOpen)
+      (ObjectContent
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (String)))
+      (BraceClose))))
+
+===================================
+insert :: Insert with VALUES syntax
+===================================
+
+INSERT INTO person (name, age) VALUES ("Tobie", 30)
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Ident)
+    (Ident)
+    (Keyword)
+    (String)
+    (Number
+      (Int))))
+
+============================
+insert :: Insert with IGNORE
+============================
+
+INSERT IGNORE INTO person {name: "Tobie"}
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Object
+      (BraceOpen)
+      (ObjectContent
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (String)))
+      (BraceClose))))
+
+=========================
+insert :: Insert RELATION
+=========================
+
+INSERT RELATION INTO knows {in: person:tobie, out: person:jaime}
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Object
+      (BraceOpen)
+      (ObjectContent
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (RecordId
+            (RecordTbIdent)
+            (Colon)
+            (RecordIdIdent)))
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (RecordId
+            (RecordTbIdent)
+            (Colon)
+            (RecordIdIdent))))
+      (BraceClose))))
+
+===========================
+insert :: Insert bulk array
+===========================
+
+INSERT INTO person [{name: "Tobie"}, {name: "Jaime"}]
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (BulkInsert
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose))
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose)))))
+
+=============================================
+insert :: Insert with ON DUPLICATE KEY UPDATE
+=============================================
+
+INSERT INTO person {name: "Tobie"} ON DUPLICATE KEY UPDATE age = 31
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Object
+      (BraceOpen)
+      (ObjectContent
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (String)))
+      (BraceClose))
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (FieldAssignment
+      (Ident)
+      (Operator)
+      (Number
+        (Int)))))
+
+============================
+insert :: Insert with RETURN
+============================
+
+INSERT INTO person {name: "Tobie"} RETURN name
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Object
+      (BraceOpen)
+      (ObjectContent
+        (ObjectProperty
+          (ObjectKey
+            (KeyName))
+          (Colon)
+          (String)))
+      (BraceClose))
+    (ReturnClause
+      (Keyword)
+      (Fields
+        (Predicate
+          (Ident))))))
+
+==============================
+insert :: Insert with variable
+==============================
+
+INSERT INTO person $data
+
+---
+
+(SurrealQL
+  (InsertStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (VariableName)))
+
+=====================
+let :: Let with value
+=====================
+
+LET $name = "Tobie"
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName))
+    (String)))
+
+======================
+let :: Let with number
+======================
+
+LET $age = 30
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName))
+    (Number
+      (Int))))
+
+==================================
+let :: Let with subquery in parens
+==================================
+
+LET $bla = (SELECT * FROM 123)
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName))
+    (SubQuery
+      (SelectStatement
+        (Keyword)
+        (Fields
+          (Any))
+        (Keyword)
+        (Number
+          (Int))))))
+
+==================================
+let :: Let with subquery statement
+==================================
+
+LET $bla = SELECT * FROM 123
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName))
+    (SelectStatement
+      (Keyword)
+      (Fields
+        (Any))
+      (Keyword)
+      (Number
+        (Int)))))
+
+===============================
+let :: Let with typed parameter
+===============================
+
+LET $name: string = "Tobie"
+
+---
+
+(SurrealQL
+  (LetStatement
+    (Keyword)
+    (ParamDefinition
+      (VariableName)
+      (Colon)
+      (Type
+        (TypeName)))
+    (String)))
+
+=======================
+live :: Live select all
+=======================
+
+LIVE SELECT * FROM person
+
+---
+
+(SurrealQL
+  (LiveSelectStatement
+    (Keyword)
+    (Keyword)
+    (Any)
+    (Keyword)
+    (Ident)))
+
+==================================
+live :: Live select from record ID
+==================================
+
+LIVE SELECT * FROM person:tobie
+
+---
+
+(SurrealQL
+  (LiveSelectStatement
+    (Keyword)
+    (Keyword)
+    (Any)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+========================
+live :: Live select DIFF
+========================
+
+LIVE SELECT DIFF FROM person
+
+---
+
+(SurrealQL
+  (LiveSelectStatement
+    (Keyword)
+    (Keyword)
+    (Literal)
+    (Keyword)
+    (Ident)))
+
+===================================
+live :: Live select specific fields
+===================================
+
+LIVE SELECT name, age FROM person
+
+---
+
+(SurrealQL
+  (LiveSelectStatement
+    (Keyword)
+    (Keyword)
+    (Predicate
+      (Ident))
+    (Predicate
+      (Ident))
+    (Keyword)
+    (Ident)))
+
+==============================
+live :: Live select with WHERE
+==============================
+
+LIVE SELECT * FROM person WHERE age > 18
+
+---
+
+(SurrealQL
+  (LiveSelectStatement
+    (Keyword)
+    (Keyword)
+    (Any)
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+======================
+live :: Kill statement
+======================
+
+KILL "some-uuid-here"
+
+---
+
+(SurrealQL
+  (KillStatement
+    (Keyword)
+    (String)))
+
+==============================
+option :: Option without value
+==============================
+
+OPTION IMPORT
+
+---
+
+(SurrealQL
+  (OptionStatement
+    (Keyword)
+    (Ident)))
+
+==========================
+option :: Option with true
+==========================
+
+OPTION IMPORT = true
+
+---
+
+(SurrealQL
+  (OptionStatement
+    (Keyword)
+    (Ident)
+    (Bool)))
+
+===========================
+option :: Option with false
+===========================
+
+OPTION IMPORT = false
+
+---
+
+(SurrealQL
+  (OptionStatement
+    (Keyword)
+    (Ident)
+    (Bool)))
+
+========================
+rebuild :: Rebuild index
+========================
+
+REBUILD INDEX idx_email ON TABLE person
+
+---
+
+(SurrealQL
+  (RebuildStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+==================================
+rebuild :: Rebuild index if exists
+==================================
+
+REBUILD INDEX IF EXISTS idx_email ON TABLE person
+
+---
+
+(SurrealQL
+  (RebuildStatement
+    (Keyword)
+    (Keyword)
+    (IfExistsClause
+      (Keyword)
+      (Keyword))
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+=======================
+relate :: Simple relate
+=======================
+
+RELATE person:tobie->knows->person:jaime
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+=====================
+relate :: Relate ONLY
+=====================
+
+RELATE ONLY person:tobie->knows->person:jaime
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+=========================
+relate :: Relate with SET
+=========================
+
+RELATE person:tobie->knows->person:jaime SET since = "2024-01-01"
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))))
+
+=============================
+relate :: Relate with CONTENT
+=============================
+
+RELATE person:tobie->knows->person:jaime CONTENT {since: "2024-01-01"}
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (ContentClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose)))))
+
+============================
+relate :: Relate with RETURN
+============================
+
+RELATE person:tobie->knows->person:jaime RETURN AFTER
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+====================================
+relate :: Relate with ident subjects
+====================================
+
+RELATE person->knows->person
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (Ident)
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (Ident)))
+
+======================================
+relate :: Relate with variable subject
+======================================
+
+RELATE $from->knows->$to
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (VariableName)
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (VariableName)))
+
+===================================
+relate :: Relate with array subject
+===================================
+
+RELATE [person:tobie]->knows->person:jaime
+
+---
+
+(SurrealQL
+  (RelateStatement
+    (Keyword)
+    (Array
+      (RecordId
+        (RecordTbIdent)
+        (Colon)
+        (RecordIdIdent)))
+    (LookupRight)
+    (Ident)
+    (LookupRight)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+==========================
+remove :: Remove namespace
+==========================
+
+REMOVE NAMESPACE test
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+remove :: Remove database
+=========================
+
+REMOVE DATABASE test
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=====================
+remove :: Remove user
+=====================
+
+REMOVE USER tobie ON ROOT
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (Keyword)))
+
+======================
+remove :: Remove token
+======================
+
+REMOVE TOKEN mytoken ON NAMESPACE
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (Keyword)))
+
+======================
+remove :: Remove event
+======================
+
+REMOVE EVENT myevent ON TABLE person
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+======================
+remove :: Remove field
+======================
+
+REMOVE FIELD name ON TABLE person
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+======================
+remove :: Remove index
+======================
+
+REMOVE INDEX idx_email ON TABLE person
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+=========================
+remove :: Remove analyzer
+=========================
+
+REMOVE ANALYZER my_analyzer
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+remove :: Remove function
+=========================
+
+REMOVE FUNCTION fn::update_author
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (FunctionName)))
+
+======================
+remove :: Remove param
+======================
+
+REMOVE PARAM $endpointBase
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (VariableName)))
+
+======================
+remove :: Remove scope
+======================
+
+REMOVE SCOPE account
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=======================
+remove :: Remove bucket
+=======================
+
+REMOVE BUCKET mybucket
+
+---
+
+(SurrealQL
+  (RemoveStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+======================
+return :: Return value
+======================
+
+RETURN 42
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (Number
+      (Int))))
+
+=======================
+return :: Return string
+=======================
+
+RETURN "hello"
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (String)))
+
+===========================
+return :: Return expression
+===========================
+
+RETURN 1 + 2
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Number
+        (Int))
+      (Operator)
+      (Number
+        (Int)))))
+
+=========================
+return :: Return variable
+=========================
+
+RETURN $result
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (VariableName)))
+
+==============================
+return :: Return function call
+==============================
+
+RETURN fn::greet("Tobie")
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (FunctionCall
+      (FunctionName)
+      (ArgumentList
+        (String)))))
+
+===========================
+select :: Simple select all
+===========================
+
+SELECT * FROM test
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)))
+
+================================
+select :: Select specific fields
+================================
+
+SELECT name, age FROM person
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Predicate
+        (Ident))
+      (Predicate
+        (Ident)))
+    (Keyword)
+    (Ident)))
+
+===========================
+select :: Select with alias
+===========================
+
+SELECT name AS n FROM person
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Predicate
+        (Ident)
+        (Keyword)
+        (Ident)))
+    (Keyword)
+    (Ident)))
+
+======================
+select :: Select VALUE
+======================
+
+SELECT VALUE name FROM person
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Keyword)
+      (Predicate
+        (Ident)))
+    (Keyword)
+    (Ident)))
+
+=====================
+select :: Select ONLY
+=====================
+
+SELECT * FROM ONLY person:tobie
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+===========================
+select :: Select with WHERE
+===========================
+
+SELECT * FROM person WHERE age > 18
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+==============================
+select :: Select with ORDER BY
+==============================
+
+SELECT * FROM person ORDER BY name ASC
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (OrderClause
+      (Keyword)
+      (Keyword)
+      (Order
+        (Idiom
+          (Ident))
+        (Keyword)))))
+
+===================================
+select :: Select with ORDER BY DESC
+===================================
+
+SELECT * FROM person ORDER BY age DESC
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (OrderClause
+      (Keyword)
+      (Keyword)
+      (Order
+        (Idiom
+          (Ident))
+        (Keyword)))))
+
+==============================
+select :: Select with GROUP BY
+==============================
+
+SELECT count() FROM person GROUP BY age
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Predicate
+        (FunctionCall
+          (FunctionName)
+          (ArgumentList))))
+    (Keyword)
+    (Ident)
+    (GroupClause
+      (Keyword)
+      (Keyword)
+      (Idiom
+        (Ident)))))
+
+===============================
+select :: Select with GROUP ALL
+===============================
+
+SELECT count() FROM person GROUP ALL
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Predicate
+        (FunctionCall
+          (FunctionName)
+          (ArgumentList))))
+    (Keyword)
+    (Ident)
+    (GroupClause
+      (Keyword)
+      (Keyword))))
+
+===========================
+select :: Select with LIMIT
+===========================
+
+SELECT * FROM person LIMIT 10
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (LimitStartComboClause
+      (LimitClause
+        (Keyword)
+        (Number
+          (Int))))))
+
+==============================
+select :: Select with LIMIT BY
+==============================
+
+SELECT * FROM person LIMIT BY 10
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (LimitStartComboClause
+      (LimitClause
+        (Keyword)
+        (Keyword)
+        (Number
+          (Int))))))
+
+===========================
+select :: Select with START
+===========================
+
+SELECT * FROM person START 5
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (LimitStartComboClause
+      (StartClause
+        (Keyword)
+        (Number
+          (Int))))))
+
+==============================
+select :: Select with START AT
+==============================
+
+SELECT * FROM person START AT 5
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (LimitStartComboClause
+      (StartClause
+        (Keyword)
+        (Keyword)
+        (Number
+          (Int))))))
+
+=====================================
+select :: Select with LIMIT and START
+=====================================
+
+SELECT * FROM person LIMIT 10 START 5
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (LimitStartComboClause
+      (LimitClause
+        (Keyword)
+        (Number
+          (Int)))
+      (StartClause
+        (Keyword)
+        (Number
+          (Int))))))
+
+===========================
+select :: Select with FETCH
+===========================
+
+SELECT * FROM person FETCH posts
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (FetchClause
+      (Keyword)
+      (Idiom
+        (Ident)))))
+
+===========================
+select :: Select with SPLIT
+===========================
+
+SELECT * FROM person SPLIT emails
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (SplitClause
+      (Keyword)
+      (Idiom
+        (Ident)))))
+
+==========================
+select :: Select with OMIT
+==========================
+
+SELECT * OMIT password FROM person
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (OmitClause
+      (Keyword)
+      (Predicate
+        (Ident)))
+    (Keyword)
+    (Ident)))
+
+================================
+select :: Select with WITH INDEX
+================================
+
+SELECT * FROM person WITH INDEX idx_name
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WithClause
+      (Keyword)
+      (Keyword)
+      (Ident))))
+
+==================================
+select :: Select with WITH NOINDEX
+==================================
+
+SELECT * FROM person WITH NOINDEX
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WithClause
+      (Keyword)
+      (Keyword))))
+
+=============================
+select :: Select with EXPLAIN
+=============================
+
+SELECT * FROM person EXPLAIN
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (ExplainClause
+      (Keyword))))
+
+==================================
+select :: Select with EXPLAIN FULL
+==================================
+
+SELECT * FROM person EXPLAIN FULL
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (ExplainClause
+      (Keyword)
+      (Literal))))
+
+==============================
+select :: Select with PARALLEL
+==============================
+
+SELECT * FROM person PARALLEL
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (ParallelClause
+      (Keyword))))
+
+===============================
+select :: Select with TEMPFILES
+===============================
+
+SELECT * FROM person TEMPFILES
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (TempfilesClause
+      (Keyword))))
+
+=============================
+select :: Select with TIMEOUT
+=============================
+
+SELECT * FROM person TIMEOUT 5s
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (TimeoutClause
+      (Keyword)
+      (Duration
+        (DurationPart)))))
+
+=============================
+select :: Select with VERSION
+=============================
+
+SELECT * FROM person VERSION d'2024-10-10T14:37:08.444Z'
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (VersionClause
+      (Keyword)
+      (String))))
+
+======================================
+select :: Select with multiple clauses
+======================================
+
+SELECT * FROM person WHERE age > 18 ORDER BY name LIMIT 10
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (OrderClause
+      (Keyword)
+      (Keyword)
+      (Order
+        (Idiom
+          (Ident))))
+    (LimitStartComboClause
+      (LimitClause
+        (Keyword)
+        (Number
+          (Int))))))
+
+======================================
+select :: Select from multiple targets
+======================================
+
+SELECT * FROM person, animal
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (Ident)))
+
+==============================
+select :: Select from subquery
+==============================
+
+SELECT * FROM (SELECT * FROM person)
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (SubQuery
+      (SelectStatement
+        (Keyword)
+        (Fields
+          (Any))
+        (Keyword)
+        (Ident)))))
+
+==============================
+show :: Show changes for table
+==============================
+
+SHOW CHANGES FOR TABLE person
+
+---
+
+(SurrealQL
+  (ShowStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+===============================
+show :: Show changes with since
+===============================
+
+SHOW CHANGES FOR TABLE person SINCE "2024-01-01T00:00:00Z"
+
+---
+
+(SurrealQL
+  (ShowStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (String)))
+
+===============================
+show :: Show changes with limit
+===============================
+
+SHOW CHANGES FOR TABLE person LIMIT 10
+
+---
+
+(SurrealQL
+  (ShowStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (Number
+      (Int))))
+
+=========================================
+show :: Show changes with since and limit
+=========================================
+
+SHOW CHANGES FOR TABLE person SINCE "2024-01-01T00:00:00Z" LIMIT 10
+
+---
+
+(SurrealQL
+  (ShowStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (String)
+    (Keyword)
+    (Number
+      (Int))))
+
+===========================
+sleep :: Sleep with seconds
+===========================
+
+SLEEP 1s
+
+---
+
+(SurrealQL
+  (SleepStatement
+    (Keyword)
+    (Duration
+      (DurationPart))))
+
+================================
+sleep :: Sleep with milliseconds
+================================
+
+SLEEP 100ms
+
+---
+
+(SurrealQL
+  (SleepStatement
+    (Keyword)
+    (Duration
+      (DurationPart))))
+
+=======================================
+sleep :: Sleep with multi-part duration
+=======================================
+
+SLEEP 1m30s
+
+---
+
+(SurrealQL
+  (SleepStatement
+    (Keyword)
+    (Duration
+      (DurationPart)
+      (DurationPart))))
+
+=====================
+throw :: Throw string
+=====================
+
+THROW "An error occurred"
+
+---
+
+(SurrealQL
+  (ThrowStatement
+    (Keyword)
+    (String)))
+
+=======================
+throw :: Throw variable
+=======================
+
+THROW $error
+
+---
+
+(SurrealQL
+  (ThrowStatement
+    (Keyword)
+    (VariableName)))
+
+=========================
+throw :: Throw expression
+=========================
+
+THROW "Error: " + $msg
+
+---
+
+(SurrealQL
+  (ThrowStatement
+    (Keyword)
+    (BinaryExpression
+      (String)
+      (Operator)
+      (VariableName))))
+
+=====================
+transactions :: Begin
+=====================
+
+BEGIN
+
+---
+
+(SurrealQL
+  (BeginStatement
+    (Keyword)))
+
+=================================
+transactions :: Begin transaction
+=================================
+
+BEGIN TRANSACTION
+
+---
+
+(SurrealQL
+  (BeginStatement
+    (Keyword)
+    (Keyword)))
+
+======================
+transactions :: Cancel
+======================
+
+CANCEL
+
+---
+
+(SurrealQL
+  (CancelStatement
+    (Keyword)))
+
+==================================
+transactions :: Cancel transaction
+==================================
+
+CANCEL TRANSACTION
+
+---
+
+(SurrealQL
+  (CancelStatement
+    (Keyword)
+    (Keyword)))
+
+======================
+transactions :: Commit
+======================
+
+COMMIT
+
+---
+
+(SurrealQL
+  (CommitStatement
+    (Keyword)))
+
+==================================
+transactions :: Commit transaction
+==================================
+
+COMMIT TRANSACTION
+
+---
+
+(SurrealQL
+  (CommitStatement
+    (Keyword)
+    (Keyword)))
+
+=======================
+update :: Simple update
+=======================
+
+UPDATE person
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)))
+
+=====================
+update :: Update ONLY
+=====================
+
+UPDATE ONLY person:tobie
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+=========================
+update :: Update with SET
+=========================
+
+UPDATE person SET age = 31
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+=============================
+update :: Update with CONTENT
+=============================
+
+UPDATE person CONTENT {name: "Tobie"}
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (ContentClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose)))))
+
+===========================
+update :: Update with MERGE
+===========================
+
+UPDATE person MERGE {age: 31}
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (MergeClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (Number
+              (Int))))
+        (BraceClose)))))
+
+=============================
+update :: Update with REPLACE
+=============================
+
+UPDATE person REPLACE {name: "Tobie"}
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (ReplaceClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose)))))
+
+===========================
+update :: Update with UNSET
+===========================
+
+UPDATE person UNSET temp = 0
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (UnsetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))))
+
+===========================
+update :: Update with WHERE
+===========================
+
+UPDATE person SET age = 31 WHERE name = "Tobie"
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (String)))))
+
+============================
+update :: Update with RETURN
+============================
+
+UPDATE person SET age = 31 RETURN AFTER
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+=============================
+update :: Update with TIMEOUT
+=============================
+
+UPDATE person SET age = 31 TIMEOUT 5s
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (TimeoutClause
+      (Keyword)
+      (Duration
+        (DurationPart)))))
+
+==============================
+update :: Update with PARALLEL
+==============================
+
+UPDATE person SET age = 31 PARALLEL
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (ParallelClause
+      (Keyword))))
+
+=======================
+upsert :: Simple upsert
+=======================
+
+UPSERT person
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)))
+
+=====================
+upsert :: Upsert ONLY
+=====================
+
+UPSERT ONLY person:tobie
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Keyword)
+    (RecordId
+      (RecordTbIdent)
+      (Colon)
+      (RecordIdIdent))))
+
+=========================
+upsert :: Upsert with SET
+=========================
+
+UPSERT person SET name = "Tobie"
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (String)))))
+
+=============================
+upsert :: Upsert with CONTENT
+=============================
+
+UPSERT person CONTENT {name: "Tobie"}
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)
+    (ContentClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (String)))
+        (BraceClose)))))
+
+===========================
+upsert :: Upsert with MERGE
+===========================
+
+UPSERT person MERGE {age: 31}
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)
+    (MergeClause
+      (Keyword)
+      (Object
+        (BraceOpen)
+        (ObjectContent
+          (ObjectProperty
+            (ObjectKey
+              (KeyName))
+            (Colon)
+            (Number
+              (Int))))
+        (BraceClose)))))
+
+===========================
+upsert :: Upsert with WHERE
+===========================
+
+UPSERT person SET age = 31 WHERE name = "Tobie"
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (String)))))
+
+============================
+upsert :: Upsert with RETURN
+============================
+
+UPSERT person SET age = 31 RETURN AFTER
+
+---
+
+(SurrealQL
+  (UpsertStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (Number
+          (Int))))
+    (ReturnClause
+      (Keyword)
+      (Literal))))
+
+==========================
+use :: Use namespace short
+==========================
+
+USE NS test
+
+---
+
+(SurrealQL
+  (UseStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+use :: Use namespace long
+=========================
+
+USE NAMESPACE test
+
+---
+
+(SurrealQL
+  (UseStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=========================
+use :: Use database short
+=========================
+
+USE DB test
+
+---
+
+(SurrealQL
+  (UseStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+========================
+use :: Use database long
+========================
+
+USE DATABASE test
+
+---
+
+(SurrealQL
+  (UseStatement
+    (Keyword)
+    (Keyword)
+    (Ident)))
+
+=================================
+use :: Use namespace and database
+=================================
+
+USE NS test DB test
+
+---
+
+(SurrealQL
+  (UseStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (Ident)))

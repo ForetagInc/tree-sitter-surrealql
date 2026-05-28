@@ -9,7 +9,6 @@
 		"build": "tree-sitter build",
 		"test": "tree-sitter test",
 		"parse": "tree-sitter parse",
-		"compare": "bun run compare.ts",
 		"qa": "biome format --write . && biome check --write ."
 	},
 	"devDependencies": {

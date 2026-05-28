@@ -18,15 +18,12 @@ Tree-sitter grammar for [SurrealQL](https://surrealdb.com/docs/surrealql), built
 
 - `353 / 355` lezer corpus tests produce identical canonical trees (`bun run run-corpus.ts`).
 - `tree-sitter test` succeeds on `353 / 355` fixtures (the two failing tests are JavaScript function bodies whose internal `BraceOpen` / `JavaScriptContent` / `BraceClose` cannot be exposed without breaking the external scanner for invalid input — see [`LEZER_ISSUES.md`](LEZER_ISSUES.md)).
-- `reference.surql` contains several constructs that neither parser fully supports (`|table:N..M|`, `FOR x IN SELECT … {…}`, `IF x { … } ELSE { … }` as a value, `FULLTEXT ANALYZER …`, `1f`/`2f` literals, …). Lezer recovers with embedded `⚠` markers; tree-sitter's recovery wraps broader regions in `(ERROR …)`. The comparison harness flattens error nodes to align the surrounding well-formed structure.
 
 ## Scripts
 
 ```bash
 bun run gen        # tree-sitter generate
 bun run test       # tree-sitter test (corpus fixtures)
-bun run compare    # bun run compare.ts reference.surql
-bun run gen-corpus # bun run gen-corpus.ts (regenerate test/corpus/*.txt)
 ```
 
 ## Design

@@ -919,7 +919,7 @@ export default grammar({
 		ContentClause: ($) => seq(alias($._kw_content, $.Keyword), $.Object),
 		SetClause: ($) =>
 			seq(alias($._kw_set, $.Keyword), csep($.FieldAssignment)),
-		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $.Object),
+		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $._value),
 		PatchClause: ($) => seq(alias($._kw_patch, $.Keyword), $.Array),
 		ReplaceClause: ($) => seq(alias($._kw_replace, $.Keyword), $.Object),
 		UnsetClause: ($) =>
@@ -1306,10 +1306,20 @@ export default grammar({
 			seq(alias($._kw_function, $.Keyword), $.FunctionName),
 
 		TypeClause: ($) =>
-			seq(
-				optional(alias($._kw_flexible, $.Keyword)),
-				alias($._kw_type, $.Keyword),
-				$._type,
+			prec.right(
+				choice(
+					seq(
+						alias($._kw_flexible, $.Keyword),
+						alias($._kw_type, $.Keyword),
+						$._type,
+					),
+					seq(
+						alias($._kw_type, $.Keyword),
+						$._type,
+						alias($._kw_flexible, $.Keyword),
+					),
+					seq(alias($._kw_type, $.Keyword), $._type),
+				),
 			),
 
 		DefaultClause: ($) =>

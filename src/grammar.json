@@ -10481,7 +10481,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[0-9]+"
+        "value": "[0-9]+(?:_[0-9]+)*"
       }
     },
     "Float": {
@@ -10497,7 +10497,7 @@
               "members": [
                 {
                   "type": "PATTERN",
-                  "value": "[0-9]+"
+                  "value": "[0-9]+(?:_[0-9]+)*"
                 },
                 {
                   "type": "STRING",
@@ -10510,7 +10510,7 @@
               "members": [
                 {
                   "type": "PATTERN",
-                  "value": "[0-9]+"
+                  "value": "[0-9]+(?:_[0-9]+)*"
                 },
                 {
                   "type": "CHOICE",
@@ -10524,14 +10524,14 @@
                         },
                         {
                           "type": "PATTERN",
-                          "value": "[0-9]+"
+                          "value": "[0-9]+(?:_[0-9]+)*"
                         },
                         {
                           "type": "CHOICE",
                           "members": [
                             {
                               "type": "PATTERN",
-                              "value": "[eE][+-]?[0-9]+"
+                              "value": "[eE][+-]?[0-9]+(?:_[0-9]+)*"
                             },
                             {
                               "type": "BLANK"
@@ -10542,7 +10542,7 @@
                     },
                     {
                       "type": "PATTERN",
-                      "value": "[eE][+-]?[0-9]+"
+                      "value": "[eE][+-]?[0-9]+(?:_[0-9]+)*"
                     }
                   ]
                 },
@@ -10579,7 +10579,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[0-9]+"
+            "value": "[0-9]+(?:_[0-9]+)*"
           },
           {
             "type": "CHOICE",
@@ -10593,7 +10593,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[0-9]+"
+                    "value": "[0-9]+(?:_[0-9]+)*"
                   }
                 ]
               },
@@ -10607,7 +10607,7 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "[eE][+-]?[0-9]+"
+                "value": "[eE][+-]?[0-9]+(?:_[0-9]+)*"
               },
               {
                 "type": "BLANK"
@@ -10948,7 +10948,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[0-9]+"
+            "value": "[0-9]+(?:_[0-9]+)*"
           },
           {
             "type": "PATTERN",
@@ -11182,7 +11182,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "[0-9]+"
+            "value": "[0-9]+(?:_[0-9]+)*"
           },
           {
             "type": "CHOICE",
@@ -11196,7 +11196,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[0-9]+"
+                    "value": "[0-9]+(?:_[0-9]+)*"
                   },
                   {
                     "type": "CHOICE",
@@ -11210,7 +11210,7 @@
                           },
                           {
                             "type": "PATTERN",
-                            "value": "[0-9]+"
+                            "value": "[0-9]+(?:_[0-9]+)*"
                           }
                         ]
                       },

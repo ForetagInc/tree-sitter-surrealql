@@ -1303,10 +1303,20 @@ export default grammar({
 			seq(alias($._kw_function, $.Keyword), $.FunctionName),
 
 		TypeClause: ($) =>
-			seq(
-				optional(alias($._kw_flexible, $.Keyword)),
-				alias($._kw_type, $.Keyword),
-				$._type,
+			prec.right(
+				choice(
+					seq(
+						alias($._kw_flexible, $.Keyword),
+						alias($._kw_type, $.Keyword),
+						$._type,
+					),
+					seq(
+						alias($._kw_type, $.Keyword),
+						$._type,
+						alias($._kw_flexible, $.Keyword),
+					),
+					seq(alias($._kw_type, $.Keyword), $._type),
+				),
 			),
 
 		DefaultClause: ($) =>

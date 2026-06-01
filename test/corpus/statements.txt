@@ -661,6 +661,53 @@ DEFINE FIELD data ON TABLE person FLEXIBLE TYPE object
       (Keyword)
       (TypeName))))
 
+=====================================================
+define :: Define field with flexible after type clause
+=====================================================
+
+DEFINE FIELD metadata ON TABLE user TYPE object FLEXIBLE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (TypeName)
+      (Keyword))))
+
+==============================================================
+define :: Define field flexible after parameterized object type
+==============================================================
+
+DEFINE FIELD alternatives ON file TYPE option<object> FLEXIBLE
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Idiom
+      (Ident))
+    (OnTableClause
+      (Keyword)
+      (Ident))
+    (TypeClause
+      (Keyword)
+      (ParameterizedType
+        (TypeName)
+        (TypeName))
+      (Keyword))))
+
 =======================================
 define :: Define field with permissions
 =======================================

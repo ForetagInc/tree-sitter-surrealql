@@ -916,7 +916,7 @@ export default grammar({
 		ContentClause: ($) => seq(alias($._kw_content, $.Keyword), $.Object),
 		SetClause: ($) =>
 			seq(alias($._kw_set, $.Keyword), csep($.FieldAssignment)),
-		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $.Object),
+		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $._value),
 		PatchClause: ($) => seq(alias($._kw_patch, $.Keyword), $.Array),
 		ReplaceClause: ($) => seq(alias($._kw_replace, $.Keyword), $.Object),
 		UnsetClause: ($) =>

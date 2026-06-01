@@ -3715,6 +3715,37 @@ UPDATE person MERGE {age: 31}
               (Int))))
         (BraceClose)))))
 
+==============================================
+update :: Update path target with MERGE expression
+==============================================
+
+UPDATE $object.id MERGE ($object + {updatedBy: $user});
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Path
+      (VariableName)
+      (Subscript
+        (Ident)))
+    (MergeClause
+      (Keyword)
+      (SubQuery
+        (BinaryExpression
+          (VariableName)
+          (Operator)
+          (Object
+            (BraceOpen)
+            (ObjectContent
+              (ObjectProperty
+                (ObjectKey
+                  (KeyName))
+                (Colon)
+                (VariableName)))
+            (BraceClose)))))))
+
 =============================
 update :: Update with REPLACE
 =============================

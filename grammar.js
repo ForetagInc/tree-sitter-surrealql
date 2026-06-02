@@ -50,6 +50,9 @@ function piped(rule) {
 	return seq(rule, repeat(seq('|', rule)));
 }
 
+/** Digit sequence with optional underscore separators (e.g. 1_000_000) */
+const DIGITS = /[0-9]+(?:_[0-9]+)*/;
+
 // ---------------------------------------------------------------------------
 // Grammar
 // ---------------------------------------------------------------------------
@@ -1813,19 +1816,19 @@ export default grammar({
 		Number: ($) =>
 			seq(optional(choice('-', '+')), choice($.Decimal, $.Float, $.Int)),
 
-		Int: ($) => token(/[0-9]+/),
+		Int: ($) => token(DIGITS),
 
 	Float: ($) =>
 			token(
 				prec(
 					1,
 					choice(
-						seq(/[0-9]+/, 'f'),
+						seq(DIGITS, 'f'),
 						seq(
-							/[0-9]+/,
+							DIGITS,
 							choice(
-								seq('.', /[0-9]+/, optional(/[eE][+-]?[0-9]+/)),
-								/[eE][+-]?[0-9]+/,
+								seq('.', DIGITS, optional(/[eE][+-]?[0-9]+(?:_[0-9]+)*/)),
+								/[eE][+-]?[0-9]+(?:_[0-9]+)*/,
 							),
 							optional('f'),
 						),
@@ -1838,9 +1841,9 @@ export default grammar({
 		Decimal: ($) =>
 			token(
 				seq(
-					/[0-9]+/,
-					optional(seq('.', /[0-9]+/)),
-					optional(/[eE][+-]?[0-9]+/),
+					DIGITS,
+					optional(seq('.', DIGITS)),
+					optional(/[eE][+-]?[0-9]+(?:_[0-9]+)*/),
 					'dec',
 				),
 			),
@@ -1910,7 +1913,7 @@ export default grammar({
 		DurationPart: ($) =>
 			token(
 				seq(
-					/[0-9]+/,
+					DIGITS,
 					/\s*/,
 					choice(
 						'ns',
@@ -1959,8 +1962,8 @@ export default grammar({
 		VersionNumber: ($) =>
 			token(
 				seq(
-					/[0-9]+/,
-					optional(seq('.', /[0-9]+/, optional(seq('.', /[0-9]+/)))),
+					DIGITS,
+					optional(seq('.', DIGITS, optional(seq('.', DIGITS)))),
 				),
 			),
 

@@ -5,7 +5,7 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"gen": "tree-sitter generate",
+		"gen": "tree-sitter generate --abi 14",
 		"build": "tree-sitter build",
 		"test": "tree-sitter test",
 		"parse": "tree-sitter parse",

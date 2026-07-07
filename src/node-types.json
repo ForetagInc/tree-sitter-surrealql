@@ -5586,6 +5586,10 @@
           "named": true
         },
         {
+          "type": "Optional",
+          "named": true
+        },
+        {
           "type": "Point",
           "named": true
         },
@@ -7865,7 +7869,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {

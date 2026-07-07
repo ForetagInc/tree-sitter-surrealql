@@ -680,6 +680,56 @@ $variable.ident.ident
     (Subscript
       (Ident))))
 
+====================================
+idioms :: Optional terminal path part
+====================================
+
+a.?
+
+---
+
+(SurrealQL
+  (Path
+    (Ident)
+    (Subscript
+      (Optional))))
+
+=================================
+idioms :: Optional nested field
+=================================
+
+person.spouse.?.name
+
+---
+
+(SurrealQL
+  (Path
+    (Ident)
+    (Subscript
+      (Ident))
+    (Subscript
+      (Optional))
+    (Subscript
+      (Ident))))
+
+======================================
+idioms :: Optional method chaining
+======================================
+
+$value.?.trim()
+
+---
+
+(SurrealQL
+  (Path
+    (VariableName)
+    (Subscript
+      (Optional))
+    (Subscript
+      (IdiomFunction
+        (FunctionName)
+        (ArgumentList)))))
+
 ===============================
 idioms :: Wildcard on record ID
 ===============================

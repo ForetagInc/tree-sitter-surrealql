@@ -1475,13 +1475,14 @@ export default grammar({
 			),
 		_pathElement: ($) =>
 			choice($.Lookup, $.Subscript, alias($._pathFilter, $.Filter)),
-		Subscript: ($) => seq(optional($.Optional), '.', $._dotPart),
+		Subscript: ($) => seq('.', $._dotPart),
 		_dotPart: ($) =>
 			choice(
 				$.At,
 				$.Ident,
 				$.IdiomFunction,
 				alias('*', $.Any),
+				$.Optional,
 				$.Destructure,
 				$.Recurse,
 			),

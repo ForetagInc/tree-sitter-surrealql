@@ -8488,18 +8488,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "Optional"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "STRING",
           "value": "."
         },
@@ -8532,6 +8520,10 @@
           },
           "named": true,
           "value": "Any"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "Optional"
         },
         {
           "type": "SYMBOL",

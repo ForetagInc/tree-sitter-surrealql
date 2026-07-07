@@ -379,6 +379,25 @@ closures :: Closure with param
       (VariableName)
       (BraceClose))))
 
+=======================================
+closures :: Closure with expression body
+=======================================
+
+|$pile| $pile != 'Complete'
+
+---
+
+(SurrealQL
+  (Closure
+    (Pipe)
+    (ParamDefinition
+      (VariableName))
+    (Pipe)
+    (BinaryExpression
+      (VariableName)
+      (Operator)
+      (String))))
+
 ====================================
 closures :: Closure with typed param
 ====================================

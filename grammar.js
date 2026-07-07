@@ -567,7 +567,7 @@ export default grammar({
 			seq(
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$.FunctionName, // customFunctionName aliased to FunctionName
-				seq('(', optional(csep($.ParamDefinition)), ')'),
+				seq('(', optional(csepTrail($.ParamDefinition)), ')'),
 				optional(seq($.LookupRight, $._type)),
 				$.Block,
 				repeat(choice($.PermissionsBasicClause, $.CommentClause)),

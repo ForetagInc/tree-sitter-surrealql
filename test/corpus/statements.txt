@@ -985,6 +985,39 @@ DEFINE FUNCTION fn::greet($name: string) {
           (String)))
       (BraceClose))))
 
+=======================================
+define :: Function params trailing comma
+=======================================
+
+DEFINE FUNCTION fn::greet($name: string,) {
+	RETURN "Hello, " + $name + "!";
+}
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (FunctionName)
+    (ParamDefinition
+      (VariableName)
+      (Colon)
+      (Type
+        (TypeName)))
+    (Block
+      (BraceOpen)
+      (ReturnStatement
+        (Keyword)
+        (BinaryExpression
+          (BinaryExpression
+            (String)
+            (Operator)
+            (VariableName))
+          (Operator)
+          (String)))
+      (BraceClose))))
+
 ======================
 define :: Define param
 ======================

@@ -70,10 +70,31 @@ export default grammar({
 	],
 
 	precedences: ($) => [
-		['prefix', 'range', 'method', 'binary', 'union', 'filter', 'for', 'clause'],
+		[
+			'prefix',
+			'range',
+			'method',
+			'binary',
+			'closure',
+			'union',
+			'filter',
+			'for',
+			'clause',
+		],
 	],
 
-	conflicts: ($) => [[$.RecordId, $.RecordIdRange], [$.WhereClause]],
+	conflicts: ($) => [
+		[$.RecordId, $.RecordIdRange],
+		[$.Path],
+		[$.Path, $.Destructure],
+		[$.WhereClause],
+		[$._baseValue, $.Closure],
+		[$._idName, $._singleType],
+		[$.Legacy, $._baseValue],
+		[$._prefixOperand, $.Path],
+		[$._value, $.Path],
+		[$._value, $.Closure],
+	],
 
 	rules: {
 		// ================================================================
@@ -266,6 +287,7 @@ export default grammar({
 				choice(
 					$.Array,
 					$.VariableName,
+					$.Range,
 					$.SubQuery,
 					$._subqueryStatement,
 					$.Block,
@@ -280,20 +302,20 @@ export default grammar({
 			seq(
 				$._value,
 				alias($._kw_then, $.Keyword),
-				choice($.Block, $.SubQuery),
+				choice($.Block, $.SubQuery, $._value),
 				repeat(
 					seq(
 						alias($._kw_else, $.Keyword),
 						alias($._kw_if, $.Keyword),
 						$._value,
 						alias($._kw_then, $.Keyword),
-						choice($.Block, $.SubQuery),
+						choice($.Block, $.SubQuery, $._value),
 					),
 				),
 				optional(
 					seq(
 						alias($._kw_else, $.Keyword),
-						choice($.Block, $.SubQuery),
+						choice($.Block, $.SubQuery, $._value),
 					),
 				),
 				alias($._kw_end, $.Keyword),
@@ -567,7 +589,7 @@ export default grammar({
 			seq(
 				optional(choice($.IfNotExistsClause, $.OverwriteClause)),
 				$.FunctionName, // customFunctionName aliased to FunctionName
-				seq('(', optional(csep($.ParamDefinition)), ')'),
+				seq('(', optional(csepTrail($.ParamDefinition)), ')'),
 				optional(seq($.LookupRight, $._type)),
 				$.Block,
 				repeat(choice($.PermissionsBasicClause, $.CommentClause)),
@@ -916,7 +938,7 @@ export default grammar({
 				$.UnsetClause,
 			),
 
-		ContentClause: ($) => seq(alias($._kw_content, $.Keyword), $.Object),
+		ContentClause: ($) => seq(alias($._kw_content, $.Keyword), $._value),
 		SetClause: ($) =>
 			seq(alias($._kw_set, $.Keyword), csep($.FieldAssignment)),
 		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $._value),
@@ -1422,12 +1444,8 @@ export default grammar({
 			),
 
 		PrefixExpression: ($) =>
-			prec(
-				'prefix',
-				seq(alias('!', $.Operator), $._prefixOperand),
-			),
-		_prefixOperand: ($) =>
-			choice($.PrefixExpression, $.Path, $._baseValue),
+			prec('prefix', seq(alias('!', $.Operator), $._prefixOperand)),
+		_prefixOperand: ($) => choice($.PrefixExpression, $.Path, $._baseValue),
 
 		_baseValue: ($) =>
 			choice(
@@ -1475,13 +1493,14 @@ export default grammar({
 			),
 		_pathElement: ($) =>
 			choice($.Lookup, $.Subscript, alias($._pathFilter, $.Filter)),
-		Subscript: ($) => seq(optional($.Optional), '.', $._dotPart),
+		Subscript: ($) => seq('.', $._dotPart),
 		_dotPart: ($) =>
 			choice(
 				$.At,
 				$.Ident,
 				$.IdiomFunction,
 				alias('*', $.Any),
+				$.Optional,
 				$.Destructure,
 				$.Recurse,
 			),
@@ -1538,10 +1557,16 @@ export default grammar({
 			seq(
 				$.BraceOpen,
 				csep(
-					seq(
-						optional(seq($.Ident, $.Colon)),
-						choice($.Ident, $.Lookup),
-						repeat($._pathElement),
+					choice(
+						seq(
+							$.Ident,
+							$.Colon,
+							choice(
+								seq($.Lookup, repeat($._pathElement)),
+								$._value,
+							),
+						),
+						seq(choice($.Ident, $.Lookup), repeat($._pathElement)),
 					),
 				),
 				$.BraceClose,
@@ -1578,7 +1603,8 @@ export default grammar({
 			),
 
 		// Idiom
-		Idiom: ($) => seq($.Ident, repeat(seq('.', $.Ident))),
+		Idiom: ($) =>
+			seq($.Ident, repeat(seq('.', choice($.Ident, alias('*', $.Any))))),
 
 		// Binary expression
 		BinaryExpression: ($) =>
@@ -1601,12 +1627,23 @@ export default grammar({
 
 		// Closure
 		Closure: ($) =>
-			seq(
-				$.Pipe,
-				optional(csep($.ParamDefinition)),
-				$.Pipe,
-				optional(seq($.LookupRight, $._type)),
-				$.Block,
+			prec(
+				'closure',
+				choice(
+					seq(
+						$.Pipe,
+						optional(csep($.ParamDefinition)),
+						$.Pipe,
+						optional(seq($.LookupRight, $._type)),
+						$.Block,
+					),
+					seq(
+						$.Pipe,
+						optional(csep($.ParamDefinition)),
+						$.Pipe,
+						$.BinaryExpression,
+					),
+				),
 			),
 
 		ParamDefinition: ($) =>
@@ -1631,8 +1668,26 @@ export default grammar({
 				$.BraceClose,
 			),
 		ObjectContent: ($) => csepTrail($.ObjectProperty),
-		ObjectProperty: ($) => seq($.ObjectKey, $.Colon, $._value),
+		ObjectProperty: ($) =>
+			seq(
+				$.ObjectKey,
+				$.Colon,
+				choice(
+					alias($._objectSelectValue, $.SelectStatement),
+					$._value,
+				),
+			),
 		ObjectKey: ($) => choice(alias($._rawident, $.KeyName), $.String),
+
+		_objectSelectValue: ($) =>
+			seq(
+				alias($._kw_select, $.Keyword),
+				alias($._kw_value, $.Keyword),
+				$.Predicate,
+				alias($._kw_from, $.Keyword),
+				optional(alias($._kw_only, $.Keyword)),
+				$._value,
+			),
 
 		Array: ($) => seq('[', optional(csepTrail($._value)), ']'),
 
@@ -1748,7 +1803,11 @@ export default grammar({
 		// ----------------------------------------------------------------
 
 		FieldAssignment: ($) =>
-			seq($.Ident, alias($._assignmentOp, $.Operator), $._value),
+			seq(
+				$.Ident,
+				alias($._assignmentOp, $.Operator),
+				choice($.IfElseStatement, $._value),
+			),
 		_assignmentOp: ($) => choice('=', '+=', '-='),
 
 		// ----------------------------------------------------------------
@@ -1818,7 +1877,7 @@ export default grammar({
 
 		Int: ($) => token(DIGITS),
 
-	Float: ($) =>
+		Float: ($) =>
 			token(
 				prec(
 					1,
@@ -1827,7 +1886,11 @@ export default grammar({
 						seq(
 							DIGITS,
 							choice(
-								seq('.', DIGITS, optional(/[eE][+-]?[0-9]+(?:_[0-9]+)*/)),
+								seq(
+									'.',
+									DIGITS,
+									optional(/[eE][+-]?[0-9]+(?:_[0-9]+)*/),
+								),
 								/[eE][+-]?[0-9]+(?:_[0-9]+)*/,
 							),
 							optional('f'),
@@ -1880,7 +1943,7 @@ export default grammar({
 						'/',
 						repeat1(
 							choice(
-								/[^/\\\n\[]/,
+								/[^/\\\n[]/,
 								seq('\\', /[^\n]/),
 								seq(
 									'[',

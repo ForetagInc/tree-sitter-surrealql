@@ -196,6 +196,44 @@ CREATE person CONTENT {name: "Tobie", age: 30}
               (Int))))
         (BraceClose)))))
 
+========================================
+create :: Create with expression CONTENT
+========================================
+
+CREATE pileDataHistory CONTENT $after.remove('id') + { updatedBy: $updatedBy } RETURN NONE
+
+---
+
+(SurrealQL
+  (CreateStatement
+    (Keyword)
+    (Ident)
+    (ContentClause
+      (Keyword)
+      (BinaryExpression
+        (Path
+          (VariableName)
+          (Subscript
+            (IdiomFunction
+              (FunctionName)
+              (ArgumentList
+                (String)))))
+        (Operator)
+        (Object
+          (BraceOpen)
+          (ObjectContent
+            (ObjectProperty
+              (ObjectKey
+                (KeyName))
+              (Colon)
+              (VariableName)))
+          (BraceClose))))
+    (ReturnClause
+      (Keyword)
+      (Fields
+        (Predicate
+          (None))))))
+
 ===================================
 create :: Create with RETURN fields
 ===================================
@@ -957,6 +995,39 @@ define :: Define function
 =========================
 
 DEFINE FUNCTION fn::greet($name: string) {
+	RETURN "Hello, " + $name + "!";
+}
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (FunctionName)
+    (ParamDefinition
+      (VariableName)
+      (Colon)
+      (Type
+        (TypeName)))
+    (Block
+      (BraceOpen)
+      (ReturnStatement
+        (Keyword)
+        (BinaryExpression
+          (BinaryExpression
+            (String)
+            (Operator)
+            (VariableName))
+          (Operator)
+          (String)))
+      (BraceClose))))
+
+=======================================
+define :: Function params trailing comma
+=======================================
+
+DEFINE FUNCTION fn::greet($name: string,) {
 	RETURN "Hello, " + $name + "!";
 }
 
@@ -3165,6 +3236,27 @@ SELECT * FROM person FETCH posts
       (Idiom
         (Ident)))))
 
+=========================================
+select :: Select with FETCH wildcard idiom
+=========================================
+
+SELECT * FROM person FETCH signature.*
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (FetchClause
+      (Keyword)
+      (Idiom
+        (Ident)
+        (Any)))))
+
 ===========================
 select :: Select with SPLIT
 ===========================
@@ -3712,6 +3804,42 @@ UPDATE person SET age = 31
         (Operator)
         (Number
           (Int))))))
+
+======================================
+update :: Update with inline if in SET
+======================================
+
+UPDATE pileData SET status=IF progress = 100 THEN 'Pending Approval' ELSE 'Started' END RETURN NONE
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (SetClause
+      (Keyword)
+      (FieldAssignment
+        (Ident)
+        (Operator)
+        (IfElseStatement
+          (Keyword)
+          (Legacy
+            (BinaryExpression
+              (Ident)
+              (Operator)
+              (Number
+                (Int)))
+            (Keyword)
+            (String)
+            (Keyword)
+            (String)
+            (Keyword)))))
+    (ReturnClause
+      (Keyword)
+      (Fields
+        (Predicate
+          (None))))))
 
 =============================
 update :: Update with CONTENT

@@ -4278,3 +4278,86 @@ USE NS test DB test
     (Ident)
     (Keyword)
     (Ident)))
+
+==================================================
+precedence :: Comparison binds tighter than AND
+==================================================
+
+SELECT * FROM t WHERE a > 1 AND b > 2
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))
+        (Operator)
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))))))
+
+==================================================
+precedence :: AND binds tighter than OR
+==================================================
+
+RETURN a = 1 OR b = 2 AND c = 3
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int)))
+      (Operator)
+      (BinaryExpression
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))
+        (Operator)
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))))))
+
+==================================================
+precedence :: Multiplication binds tighter than addition
+==================================================
+
+RETURN 1 + 2 * 3
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Number
+        (Int))
+      (Operator)
+      (BinaryExpression
+        (Number
+          (Int))
+        (Operator)
+        (Number
+          (Int))))))

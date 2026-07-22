@@ -74,7 +74,15 @@ export default grammar({
 			'prefix',
 			'range',
 			'method',
-			'binary',
+			// Binary operator tiers, tightest to loosest. Splitting the former
+			// single 'binary' level is what makes `a > 1 AND b > 2` parse as
+			// `(a > 1) AND (b > 2)` instead of flat-left.
+			'binary_power',
+			'binary_multiplicative',
+			'binary_additive',
+			'binary_comparison',
+			'binary_conjunction',
+			'binary_disjunction',
 			'closure',
 			'union',
 			'filter',
@@ -1607,8 +1615,86 @@ export default grammar({
 			seq($.Ident, repeat(seq('.', choice($.Ident, alias('*', $.Any))))),
 
 		// Binary expression
-		BinaryExpression: ($) =>
-			prec.left('binary', seq($._value, $.Operator, $._value)),
+		//
+		// Operators are grouped into precedence tiers (tightest to loosest:
+		// power, multiplicative, additive, comparison, conjunction,
+		// disjunction). Each tier still surfaces a single `Operator` node, so
+		// the CST shape is unchanged — only the nesting is corrected. This is
+		// what makes `a > 1 AND b > 2` parse as `(a > 1) AND (b > 2)` rather
+		// than the previous flat-left `((a > 1) AND b) > 2`.
+		BinaryExpression: ($) => {
+			const tier = (level, ops) =>
+				prec.left(
+					level,
+					seq($._value, alias(ops, $.Operator), $._value),
+				);
+			return choice(
+				tier('binary_disjunction', $._binop_disjunction),
+				tier('binary_conjunction', $._binop_conjunction),
+				tier('binary_comparison', $._binop_comparison),
+				tier('binary_additive', $._binop_additive),
+				tier('binary_multiplicative', $._binop_multiplicative),
+				tier('binary_power', $._binop_power),
+			);
+		},
+
+		_binop_disjunction: ($) => choice($._kw_or, '||', '??', '?:'),
+		_binop_conjunction: ($) => choice($._kw_and, '&&'),
+		_binop_comparison: ($) =>
+			choice(
+				'=',
+				'==',
+				'!=',
+				'?=',
+				'*=',
+				'~',
+				'!~',
+				'*~',
+				'<',
+				'<=',
+				'>',
+				'>=',
+				$._kw_is,
+				seq($._kw_is, $._kw_not),
+				alias($._kw_in, $.Keyword),
+				seq($._kw_not, alias($._kw_in, $.Keyword)),
+				$._kw_contains,
+				$._kw_containsnot,
+				$._kw_containsall,
+				$._kw_containsany,
+				$._kw_containsnone,
+				$._kw_inside,
+				$._kw_notinside,
+				$._kw_allinside,
+				$._kw_anyinside,
+				$._kw_noneinside,
+				$._kw_outside,
+				$._kw_intersects,
+				'@@',
+				seq('@', $.Number, '@'),
+				seq(
+					'<|',
+					$.Number,
+					optional(
+						seq(
+							',',
+							choice(
+								$.Number,
+								$.Distance,
+								seq(
+									alias($._kw_minkowski, $.Distance),
+									$.Number,
+								),
+							),
+						),
+					),
+					'|>',
+				),
+				...['∋', '∌', '⊇', '⊃', '⊅', '∈', '∉', '⊆', '⊂', '⊄'],
+			),
+		_binop_additive: ($) => choice('+', '-', '+=', '-='),
+		_binop_multiplicative: ($) => choice('*', '×', '/', '÷'),
+		_binop_power: ($) => '**',
 
 		// Range
 		Range: ($) =>
@@ -2041,54 +2127,18 @@ export default grammar({
 		//     `binaryOperatorKeyword` group (AND, OR, CONTAINS, …) are
 		//     internal extend tokens without an `@name`, so the keyword text
 		//     is consumed but not shown in the tree: `Operator` only.
+		// The binary-operator alphabet, kept as a single symbol so the `!`
+		// prefix and field assignments can still alias to `$.Operator`. Binary
+		// expressions consume these via the precedence tiers above rather than
+		// this rule directly.
 		Operator: ($) =>
 			choice(
-				$._binary_op_token,
-				$._binary_op_keyword_hidden,
-				$._kw_is,
-				seq($._kw_is, $._kw_not),
-				alias($._kw_in, $.Keyword),
-				seq($._kw_not, alias($._kw_in, $.Keyword)),
-				seq('@', $.Number, '@'),
-				seq(
-					'<|',
-					$.Number,
-					optional(
-						seq(
-							',',
-							choice(
-								$.Number,
-								$.Distance,
-								seq(
-									alias($._kw_minkowski, $.Distance),
-									$.Number,
-								),
-							),
-						),
-					),
-					'|>',
-				),
-				'-',
-				'=',
-				'>',
-				'<',
-			),
-		_binary_op_keyword_hidden: ($) =>
-			choice(
-				$._kw_and,
-				$._kw_or,
-				$._kw_contains,
-				$._kw_containsnot,
-				$._kw_containsall,
-				$._kw_containsany,
-				$._kw_containsnone,
-				$._kw_inside,
-				$._kw_notinside,
-				$._kw_allinside,
-				$._kw_anyinside,
-				$._kw_noneinside,
-				$._kw_outside,
-				$._kw_intersects,
+				$._binop_disjunction,
+				$._binop_conjunction,
+				$._binop_comparison,
+				$._binop_additive,
+				$._binop_multiplicative,
+				$._binop_power,
 			),
 		RangeOp: ($) => choice('..', '..=', '>..', '>..='),
 		BraceOpen: ($) => '{',
@@ -2174,51 +2224,6 @@ export default grammar({
 		// ================================================================
 		// Hidden token-source rules
 		// ================================================================
-
-		_binary_op_token: ($) =>
-			choice(
-				'&&',
-				'||',
-				'??',
-				'?:',
-				'!=',
-				'==',
-				'?=',
-				'*=',
-				'~',
-				'!~',
-				'*~',
-				'<=',
-				'>=',
-				'+',
-				'+=',
-				'-=',
-				'*',
-				'×',
-				'/',
-				'÷',
-				'**',
-				'@@',
-				...['∋', '∌', '⊇', '⊃', '⊅', '∈', '∉', '⊆', '⊂', '⊄'],
-			),
-
-		_binary_op_keyword: ($) =>
-			choice(
-				$._kw_and,
-				$._kw_or,
-				$._kw_contains,
-				$._kw_containsnot,
-				$._kw_containsall,
-				$._kw_containsany,
-				$._kw_containsnone,
-				$._kw_inside,
-				$._kw_notinside,
-				$._kw_allinside,
-				$._kw_anyinside,
-				$._kw_noneinside,
-				$._kw_outside,
-				$._kw_intersects,
-			),
 
 		// ================================================================
 		// Keyword tokens

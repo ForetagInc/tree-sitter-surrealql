@@ -1943,7 +1943,7 @@ export default grammar({
 						'/',
 						repeat1(
 							choice(
-								/[^/\\\n[]/,
+								/[^/\\\n\[]/,
 								seq('\\', /[^\n]/),
 								seq(
 									'[',

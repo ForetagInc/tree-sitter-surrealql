@@ -599,8 +599,17 @@
                   "value": "Keyword"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "String"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "String"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "Number"
+                    }
+                  ]
                 }
               ]
             },
@@ -5100,7 +5109,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "FieldAssignment"
+              "name": "_inclusivePredicate"
             },
             {
               "type": "REPEAT",
@@ -5113,7 +5122,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "FieldAssignment"
+                    "name": "_inclusivePredicate"
                   }
                 ]
               }
@@ -8587,6 +8596,24 @@
               "value": "WhereClause"
             },
             {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "*"
+              },
+              "named": true,
+              "value": "Any"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "$"
+              },
+              "named": true,
+              "value": "Last"
+            },
+            {
               "type": "SYMBOL",
               "name": "_expression"
             }
@@ -9900,7 +9927,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "BinaryExpression"
+                "name": "_value"
               }
             ]
           }
@@ -14209,10 +14236,6 @@
     [
       "_value",
       "Path"
-    ],
-    [
-      "_value",
-      "Closure"
     ]
   ],
   "precedences": [

@@ -101,7 +101,6 @@ export default grammar({
 		[$.Legacy, $._baseValue],
 		[$._prefixOperand, $.Path],
 		[$._value, $.Path],
-		[$._value, $.Closure],
 	],
 
 	rules: {
@@ -244,7 +243,13 @@ export default grammar({
 				alias($._kw_for, $.Keyword),
 				alias($._kw_table, $.Keyword),
 				$.Ident,
-				optional(seq(alias($._kw_since, $.Keyword), $.String)),
+				optional(
+					seq(
+						alias($._kw_since, $.Keyword),
+						// SINCE accepts a datetime string or a versionstamp number.
+						choice($.String, $.Number),
+					),
+				),
 				optional(seq(alias($._kw_limit, $.Keyword), $.Number)),
 			),
 
@@ -952,8 +957,10 @@ export default grammar({
 		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $._value),
 		PatchClause: ($) => seq(alias($._kw_patch, $.Keyword), $.Array),
 		ReplaceClause: ($) => seq(alias($._kw_replace, $.Keyword), $.Object),
+		// UNSET removes fields by name (`UNSET a, b`), so it takes a field
+		// list — the same shape as OMIT — rather than assignments.
 		UnsetClause: ($) =>
-			seq(alias($._kw_unset, $.Keyword), csep($.FieldAssignment)),
+			seq(alias($._kw_unset, $.Keyword), csep($._inclusivePredicate)),
 		OmitClause: ($) =>
 			seq(alias($._kw_omit, $.Keyword), csep($._inclusivePredicate)),
 
@@ -1521,6 +1528,9 @@ export default grammar({
 					// `[? value]` shorthand — wrap in WhereClause to match lezer's
 					// inline `WhereClause { "?" value }` rule.
 					alias($._questionWhere, $.WhereClause),
+					// `[*]` selects every element, `[$]` the last one.
+					alias('*', $.Any),
+					alias('$', $.Last),
 					$._expression,
 				),
 				']',
@@ -1723,11 +1733,13 @@ export default grammar({
 						optional(seq($.LookupRight, $._type)),
 						$.Block,
 					),
+					// Bare-expression body, e.g. `|$v, $i| $v` or `|$v| $v * 2`.
+					// Any value is allowed, not just a BinaryExpression.
 					seq(
 						$.Pipe,
 						optional(csep($.ParamDefinition)),
 						$.Pipe,
-						$.BinaryExpression,
+						$._value,
 					),
 				),
 			),

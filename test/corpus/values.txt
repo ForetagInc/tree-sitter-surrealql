@@ -398,6 +398,22 @@ closures :: Closure with expression body
       (Operator)
       (String))))
 
+==========================================
+closures :: Closure with bare value body
+==========================================
+
+|$v| $v
+
+---
+
+(SurrealQL
+  (Closure
+    (Pipe)
+    (ParamDefinition
+      (VariableName))
+    (Pipe)
+    (VariableName)))
+
 ====================================
 closures :: Closure with typed param
 ====================================
@@ -765,6 +781,34 @@ record:id.*
       (RecordIdIdent))
     (Subscript
       (Any))))
+
+===============================
+idioms :: Wildcard filter [*]
+===============================
+
+tags[*]
+
+---
+
+(SurrealQL
+  (Path
+    (Ident)
+    (Filter
+      (Any))))
+
+===============================
+idioms :: Last-element filter [$]
+===============================
+
+tags[$]
+
+---
+
+(SurrealQL
+  (Path
+    (Ident)
+    (Filter
+      (Last))))
 
 =====================================
 idioms :: Lookup arrow right with any

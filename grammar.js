@@ -76,13 +76,18 @@ export default grammar({
 			'method',
 			// Binary operator tiers, tightest to loosest. Splitting the former
 			// single 'binary' level is what makes `a > 1 AND b > 2` parse as
-			// `(a > 1) AND (b > 2)` instead of flat-left.
+			// `(a > 1) AND (b > 2)` instead of flat-left. The ordering mirrors
+			// surrealdb-core's `BindingPower` enum
+			// (Nullish < Or < And < Equality < Relation < AddSub < MulDiv <
+			// Power), so the nesting matches how the engine evaluates.
 			'binary_power',
 			'binary_multiplicative',
 			'binary_additive',
-			'binary_comparison',
+			'binary_relation',
+			'binary_equality',
 			'binary_conjunction',
 			'binary_disjunction',
+			'binary_nullish',
 			'closure',
 			'union',
 			'filter',
@@ -1626,12 +1631,15 @@ export default grammar({
 
 		// Binary expression
 		//
-		// Operators are grouped into precedence tiers (tightest to loosest:
-		// power, multiplicative, additive, comparison, conjunction,
-		// disjunction). Each tier still surfaces a single `Operator` node, so
-		// the CST shape is unchanged — only the nesting is corrected. This is
-		// what makes `a > 1 AND b > 2` parse as `(a > 1) AND (b > 2)` rather
-		// than the previous flat-left `((a > 1) AND b) > 2`.
+		// Operators are grouped into precedence tiers whose order mirrors
+		// surrealdb-core's `BindingPower` enum, tightest to loosest:
+		// power > multiplicative > additive > relation > equality >
+		// conjunction (AND) > disjunction (OR) > nullish (?? / ?:).
+		// Each tier still surfaces a single `Operator` node, so the CST node
+		// types are unchanged — only the nesting is corrected. This is what
+		// makes `a > 1 AND b > 2` parse as `(a > 1) AND (b > 2)` rather than
+		// the previous flat-left `((a > 1) AND b) > 2`, and it also gives the
+		// engine-faithful `a = (b < c)` and `a ?: (b OR c)` nestings.
 		BinaryExpression: ($) => {
 			const tier = (level, ops) =>
 				prec.left(
@@ -1639,18 +1647,24 @@ export default grammar({
 					seq($._value, alias(ops, $.Operator), $._value),
 				);
 			return choice(
+				tier('binary_nullish', $._binop_nullish),
 				tier('binary_disjunction', $._binop_disjunction),
 				tier('binary_conjunction', $._binop_conjunction),
-				tier('binary_comparison', $._binop_comparison),
+				tier('binary_equality', $._binop_equality),
+				tier('binary_relation', $._binop_relation),
 				tier('binary_additive', $._binop_additive),
 				tier('binary_multiplicative', $._binop_multiplicative),
 				tier('binary_power', $._binop_power),
 			);
 		},
 
-		_binop_disjunction: ($) => choice($._kw_or, '||', '??', '?:'),
+		// Nullish coalescing / ternary — looser than OR (BindingPower::Nullish).
+		_binop_nullish: ($) => choice('??', '?:'),
+		_binop_disjunction: ($) => choice($._kw_or, '||'),
 		_binop_conjunction: ($) => choice($._kw_and, '&&'),
-		_binop_comparison: ($) =>
+		// Equality family (BindingPower::Equality): =, ==, !=, ?=, *=, IS,
+		// IS NOT, the fuzzy-match operators, and the full-text @@ / @ref@.
+		_binop_equality: ($) =>
 			choice(
 				'=',
 				'==',
@@ -1660,12 +1674,19 @@ export default grammar({
 				'~',
 				'!~',
 				'*~',
+				$._kw_is,
+				seq($._kw_is, $._kw_not),
+				'@@',
+				seq('@', $.Number, '@'),
+			),
+		// Relational family (BindingPower::Relation): ordering, membership,
+		// containment, geo, and the KNN operator.
+		_binop_relation: ($) =>
+			choice(
 				'<',
 				'<=',
 				'>',
 				'>=',
-				$._kw_is,
-				seq($._kw_is, $._kw_not),
 				alias($._kw_in, $.Keyword),
 				seq($._kw_not, alias($._kw_in, $.Keyword)),
 				$._kw_contains,
@@ -1680,8 +1701,6 @@ export default grammar({
 				$._kw_noneinside,
 				$._kw_outside,
 				$._kw_intersects,
-				'@@',
-				seq('@', $.Number, '@'),
 				seq(
 					'<|',
 					$.Number,
@@ -2145,9 +2164,11 @@ export default grammar({
 		// this rule directly.
 		Operator: ($) =>
 			choice(
+				$._binop_nullish,
 				$._binop_disjunction,
 				$._binop_conjunction,
-				$._binop_comparison,
+				$._binop_equality,
+				$._binop_relation,
 				$._binop_additive,
 				$._binop_multiplicative,
 				$._binop_power,

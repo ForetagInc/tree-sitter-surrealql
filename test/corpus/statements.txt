@@ -4396,3 +4396,41 @@ RETURN 1 + 2 * 3
         (Operator)
         (Number
           (Int))))))
+
+==================================================
+precedence :: Relation binds tighter than equality
+==================================================
+
+RETURN a = b < c
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Ident)
+      (Operator)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Ident)))))
+
+==================================================
+precedence :: Nullish coalescing is looser than OR
+==================================================
+
+RETURN a ?: b OR c
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Ident)
+      (Operator)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Ident)))))

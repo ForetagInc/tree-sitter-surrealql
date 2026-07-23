@@ -9220,6 +9220,32 @@
       "members": [
         {
           "type": "PREC_LEFT",
+          "value": "binary_nullish",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_value"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_binop_nullish"
+                },
+                "named": true,
+                "value": "Operator"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_value"
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC_LEFT",
           "value": "binary_disjunction",
           "content": {
             "type": "SEQ",
@@ -9272,7 +9298,7 @@
         },
         {
           "type": "PREC_LEFT",
-          "value": "binary_comparison",
+          "value": "binary_equality",
           "content": {
             "type": "SEQ",
             "members": [
@@ -9284,7 +9310,33 @@
                 "type": "ALIAS",
                 "content": {
                   "type": "SYMBOL",
-                  "name": "_binop_comparison"
+                  "name": "_binop_equality"
+                },
+                "named": true,
+                "value": "Operator"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_value"
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC_LEFT",
+          "value": "binary_relation",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_value"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_binop_relation"
                 },
                 "named": true,
                 "value": "Operator"
@@ -9376,6 +9428,19 @@
         }
       ]
     },
+    "_binop_nullish": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "??"
+        },
+        {
+          "type": "STRING",
+          "value": "?:"
+        }
+      ]
+    },
     "_binop_disjunction": {
       "type": "CHOICE",
       "members": [
@@ -9386,14 +9451,6 @@
         {
           "type": "STRING",
           "value": "||"
-        },
-        {
-          "type": "STRING",
-          "value": "??"
-        },
-        {
-          "type": "STRING",
-          "value": "?:"
         }
       ]
     },
@@ -9410,7 +9467,7 @@
         }
       ]
     },
-    "_binop_comparison": {
+    "_binop_equality": {
       "type": "CHOICE",
       "members": [
         {
@@ -9446,22 +9503,6 @@
           "value": "*~"
         },
         {
-          "type": "STRING",
-          "value": "<"
-        },
-        {
-          "type": "STRING",
-          "value": "<="
-        },
-        {
-          "type": "STRING",
-          "value": ">"
-        },
-        {
-          "type": "STRING",
-          "value": ">="
-        },
-        {
           "type": "SYMBOL",
           "name": "_kw_is"
         },
@@ -9477,6 +9518,48 @@
               "name": "_kw_not"
             }
           ]
+        },
+        {
+          "type": "STRING",
+          "value": "@@"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "@"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "Number"
+            },
+            {
+              "type": "STRING",
+              "value": "@"
+            }
+          ]
+        }
+      ]
+    },
+    "_binop_relation": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "STRING",
+          "value": "<="
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        },
+        {
+          "type": "STRING",
+          "value": ">="
         },
         {
           "type": "ALIAS",
@@ -9552,27 +9635,6 @@
         {
           "type": "SYMBOL",
           "name": "_kw_intersects"
-        },
-        {
-          "type": "STRING",
-          "value": "@@"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "@"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "Number"
-            },
-            {
-              "type": "STRING",
-              "value": "@"
-            }
-          ]
         },
         {
           "type": "SEQ",
@@ -12019,6 +12081,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "_binop_nullish"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_binop_disjunction"
         },
         {
@@ -12027,7 +12093,11 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_binop_comparison"
+          "name": "_binop_equality"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_binop_relation"
         },
         {
           "type": "SYMBOL",
@@ -14266,7 +14336,11 @@
       },
       {
         "type": "STRING",
-        "value": "binary_comparison"
+        "value": "binary_relation"
+      },
+      {
+        "type": "STRING",
+        "value": "binary_equality"
       },
       {
         "type": "STRING",
@@ -14275,6 +14349,10 @@
       {
         "type": "STRING",
         "value": "binary_disjunction"
+      },
+      {
+        "type": "STRING",
+        "value": "binary_nullish"
       },
       {
         "type": "STRING",

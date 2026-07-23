@@ -3555,6 +3555,25 @@ SHOW CHANGES FOR TABLE person SINCE "2024-01-01T00:00:00Z"
     (Keyword)
     (String)))
 
+==========================================
+show :: Show changes since versionstamp number
+==========================================
+
+SHOW CHANGES FOR TABLE person SINCE 100
+
+---
+
+(SurrealQL
+  (ShowStatement
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (Keyword)
+    (Number
+      (Int))))
+
 ===============================
 show :: Show changes with limit
 ===============================
@@ -3949,7 +3968,7 @@ UPDATE person REPLACE {name: "Tobie"}
 update :: Update with UNSET
 ===========================
 
-UPDATE person UNSET temp = 0
+UPDATE person UNSET temp
 
 ---
 
@@ -3959,11 +3978,27 @@ UPDATE person UNSET temp = 0
     (Ident)
     (UnsetClause
       (Keyword)
-      (FieldAssignment
-        (Ident)
-        (Operator)
-        (Number
-          (Int))))))
+      (Predicate
+        (Ident)))))
+
+=================================
+update :: Update with UNSET fields
+=================================
+
+UPDATE person UNSET a, b
+
+---
+
+(SurrealQL
+  (UpdateStatement
+    (Keyword)
+    (Ident)
+    (UnsetClause
+      (Keyword)
+      (Predicate
+        (Ident))
+      (Predicate
+        (Ident)))))
 
 ===========================
 update :: Update with WHERE
@@ -4278,3 +4313,124 @@ USE NS test DB test
     (Ident)
     (Keyword)
     (Ident)))
+
+==================================================
+precedence :: Comparison binds tighter than AND
+==================================================
+
+SELECT * FROM t WHERE a > 1 AND b > 2
+
+---
+
+(SurrealQL
+  (SelectStatement
+    (Keyword)
+    (Fields
+      (Any))
+    (Keyword)
+    (Ident)
+    (WhereClause
+      (Keyword)
+      (BinaryExpression
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))
+        (Operator)
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))))))
+
+==================================================
+precedence :: AND binds tighter than OR
+==================================================
+
+RETURN a = 1 OR b = 2 AND c = 3
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Number
+          (Int)))
+      (Operator)
+      (BinaryExpression
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))
+        (Operator)
+        (BinaryExpression
+          (Ident)
+          (Operator)
+          (Number
+            (Int)))))))
+
+==================================================
+precedence :: Multiplication binds tighter than addition
+==================================================
+
+RETURN 1 + 2 * 3
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Number
+        (Int))
+      (Operator)
+      (BinaryExpression
+        (Number
+          (Int))
+        (Operator)
+        (Number
+          (Int))))))
+
+==================================================
+precedence :: Relation binds tighter than equality
+==================================================
+
+RETURN a = b < c
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Ident)
+      (Operator)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Ident)))))
+
+==================================================
+precedence :: Nullish coalescing is looser than OR
+==================================================
+
+RETURN a ?: b OR c
+
+---
+
+(SurrealQL
+  (ReturnStatement
+    (Keyword)
+    (BinaryExpression
+      (Ident)
+      (Operator)
+      (BinaryExpression
+        (Ident)
+        (Operator)
+        (Ident)))))

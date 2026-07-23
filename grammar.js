@@ -74,7 +74,20 @@ export default grammar({
 			'prefix',
 			'range',
 			'method',
-			'binary',
+			// Binary operator tiers, tightest to loosest. Splitting the former
+			// single 'binary' level is what makes `a > 1 AND b > 2` parse as
+			// `(a > 1) AND (b > 2)` instead of flat-left. The ordering mirrors
+			// surrealdb-core's `BindingPower` enum
+			// (Nullish < Or < And < Equality < Relation < AddSub < MulDiv <
+			// Power), so the nesting matches how the engine evaluates.
+			'binary_power',
+			'binary_multiplicative',
+			'binary_additive',
+			'binary_relation',
+			'binary_equality',
+			'binary_conjunction',
+			'binary_disjunction',
+			'binary_nullish',
 			'closure',
 			'union',
 			'filter',
@@ -93,7 +106,6 @@ export default grammar({
 		[$.Legacy, $._baseValue],
 		[$._prefixOperand, $.Path],
 		[$._value, $.Path],
-		[$._value, $.Closure],
 	],
 
 	rules: {
@@ -236,7 +248,13 @@ export default grammar({
 				alias($._kw_for, $.Keyword),
 				alias($._kw_table, $.Keyword),
 				$.Ident,
-				optional(seq(alias($._kw_since, $.Keyword), $.String)),
+				optional(
+					seq(
+						alias($._kw_since, $.Keyword),
+						// SINCE accepts a datetime string or a versionstamp number.
+						choice($.String, $.Number),
+					),
+				),
 				optional(seq(alias($._kw_limit, $.Keyword), $.Number)),
 			),
 
@@ -944,8 +962,10 @@ export default grammar({
 		MergeClause: ($) => seq(alias($._kw_merge, $.Keyword), $._value),
 		PatchClause: ($) => seq(alias($._kw_patch, $.Keyword), $.Array),
 		ReplaceClause: ($) => seq(alias($._kw_replace, $.Keyword), $.Object),
+		// UNSET removes fields by name (`UNSET a, b`), so it takes a field
+		// list — the same shape as OMIT — rather than assignments.
 		UnsetClause: ($) =>
-			seq(alias($._kw_unset, $.Keyword), csep($.FieldAssignment)),
+			seq(alias($._kw_unset, $.Keyword), csep($._inclusivePredicate)),
 		OmitClause: ($) =>
 			seq(alias($._kw_omit, $.Keyword), csep($._inclusivePredicate)),
 
@@ -1513,6 +1533,9 @@ export default grammar({
 					// `[? value]` shorthand — wrap in WhereClause to match lezer's
 					// inline `WhereClause { "?" value }` rule.
 					alias($._questionWhere, $.WhereClause),
+					// `[*]` selects every element, `[$]` the last one.
+					alias('*', $.Any),
+					alias('$', $.Last),
 					$._expression,
 				),
 				']',
@@ -1607,8 +1630,100 @@ export default grammar({
 			seq($.Ident, repeat(seq('.', choice($.Ident, alias('*', $.Any))))),
 
 		// Binary expression
-		BinaryExpression: ($) =>
-			prec.left('binary', seq($._value, $.Operator, $._value)),
+		//
+		// Operators are grouped into precedence tiers whose order mirrors
+		// surrealdb-core's `BindingPower` enum, tightest to loosest:
+		// power > multiplicative > additive > relation > equality >
+		// conjunction (AND) > disjunction (OR) > nullish (?? / ?:).
+		// Each tier still surfaces a single `Operator` node, so the CST node
+		// types are unchanged — only the nesting is corrected. This is what
+		// makes `a > 1 AND b > 2` parse as `(a > 1) AND (b > 2)` rather than
+		// the previous flat-left `((a > 1) AND b) > 2`, and it also gives the
+		// engine-faithful `a = (b < c)` and `a ?: (b OR c)` nestings.
+		BinaryExpression: ($) => {
+			const tier = (level, ops) =>
+				prec.left(
+					level,
+					seq($._value, alias(ops, $.Operator), $._value),
+				);
+			return choice(
+				tier('binary_nullish', $._binop_nullish),
+				tier('binary_disjunction', $._binop_disjunction),
+				tier('binary_conjunction', $._binop_conjunction),
+				tier('binary_equality', $._binop_equality),
+				tier('binary_relation', $._binop_relation),
+				tier('binary_additive', $._binop_additive),
+				tier('binary_multiplicative', $._binop_multiplicative),
+				tier('binary_power', $._binop_power),
+			);
+		},
+
+		// Nullish coalescing / ternary — looser than OR (BindingPower::Nullish).
+		_binop_nullish: ($) => choice('??', '?:'),
+		_binop_disjunction: ($) => choice($._kw_or, '||'),
+		_binop_conjunction: ($) => choice($._kw_and, '&&'),
+		// Equality family (BindingPower::Equality): =, ==, !=, ?=, *=, IS,
+		// IS NOT, the fuzzy-match operators, and the full-text @@ / @ref@.
+		_binop_equality: ($) =>
+			choice(
+				'=',
+				'==',
+				'!=',
+				'?=',
+				'*=',
+				'~',
+				'!~',
+				'*~',
+				$._kw_is,
+				seq($._kw_is, $._kw_not),
+				'@@',
+				seq('@', $.Number, '@'),
+			),
+		// Relational family (BindingPower::Relation): ordering, membership,
+		// containment, geo, and the KNN operator.
+		_binop_relation: ($) =>
+			choice(
+				'<',
+				'<=',
+				'>',
+				'>=',
+				alias($._kw_in, $.Keyword),
+				seq($._kw_not, alias($._kw_in, $.Keyword)),
+				$._kw_contains,
+				$._kw_containsnot,
+				$._kw_containsall,
+				$._kw_containsany,
+				$._kw_containsnone,
+				$._kw_inside,
+				$._kw_notinside,
+				$._kw_allinside,
+				$._kw_anyinside,
+				$._kw_noneinside,
+				$._kw_outside,
+				$._kw_intersects,
+				seq(
+					'<|',
+					$.Number,
+					optional(
+						seq(
+							',',
+							choice(
+								$.Number,
+								$.Distance,
+								seq(
+									alias($._kw_minkowski, $.Distance),
+									$.Number,
+								),
+							),
+						),
+					),
+					'|>',
+				),
+				...['∋', '∌', '⊇', '⊃', '⊅', '∈', '∉', '⊆', '⊂', '⊄'],
+			),
+		_binop_additive: ($) => choice('+', '-', '+=', '-='),
+		_binop_multiplicative: ($) => choice('*', '×', '/', '÷'),
+		_binop_power: ($) => '**',
 
 		// Range
 		Range: ($) =>
@@ -1637,11 +1752,13 @@ export default grammar({
 						optional(seq($.LookupRight, $._type)),
 						$.Block,
 					),
+					// Bare-expression body, e.g. `|$v, $i| $v` or `|$v| $v * 2`.
+					// Any value is allowed, not just a BinaryExpression.
 					seq(
 						$.Pipe,
 						optional(csep($.ParamDefinition)),
 						$.Pipe,
-						$.BinaryExpression,
+						$._value,
 					),
 				),
 			),
@@ -1943,7 +2060,7 @@ export default grammar({
 						'/',
 						repeat1(
 							choice(
-								/[^/\\\n[]/,
+								/[^/\\\n\[]/,
 								seq('\\', /[^\n]/),
 								seq(
 									'[',
@@ -2041,54 +2158,20 @@ export default grammar({
 		//     `binaryOperatorKeyword` group (AND, OR, CONTAINS, …) are
 		//     internal extend tokens without an `@name`, so the keyword text
 		//     is consumed but not shown in the tree: `Operator` only.
+		// The binary-operator alphabet, kept as a single symbol so the `!`
+		// prefix and field assignments can still alias to `$.Operator`. Binary
+		// expressions consume these via the precedence tiers above rather than
+		// this rule directly.
 		Operator: ($) =>
 			choice(
-				$._binary_op_token,
-				$._binary_op_keyword_hidden,
-				$._kw_is,
-				seq($._kw_is, $._kw_not),
-				alias($._kw_in, $.Keyword),
-				seq($._kw_not, alias($._kw_in, $.Keyword)),
-				seq('@', $.Number, '@'),
-				seq(
-					'<|',
-					$.Number,
-					optional(
-						seq(
-							',',
-							choice(
-								$.Number,
-								$.Distance,
-								seq(
-									alias($._kw_minkowski, $.Distance),
-									$.Number,
-								),
-							),
-						),
-					),
-					'|>',
-				),
-				'-',
-				'=',
-				'>',
-				'<',
-			),
-		_binary_op_keyword_hidden: ($) =>
-			choice(
-				$._kw_and,
-				$._kw_or,
-				$._kw_contains,
-				$._kw_containsnot,
-				$._kw_containsall,
-				$._kw_containsany,
-				$._kw_containsnone,
-				$._kw_inside,
-				$._kw_notinside,
-				$._kw_allinside,
-				$._kw_anyinside,
-				$._kw_noneinside,
-				$._kw_outside,
-				$._kw_intersects,
+				$._binop_nullish,
+				$._binop_disjunction,
+				$._binop_conjunction,
+				$._binop_equality,
+				$._binop_relation,
+				$._binop_additive,
+				$._binop_multiplicative,
+				$._binop_power,
 			),
 		RangeOp: ($) => choice('..', '..=', '>..', '>..='),
 		BraceOpen: ($) => '{',
@@ -2174,51 +2257,6 @@ export default grammar({
 		// ================================================================
 		// Hidden token-source rules
 		// ================================================================
-
-		_binary_op_token: ($) =>
-			choice(
-				'&&',
-				'||',
-				'??',
-				'?:',
-				'!=',
-				'==',
-				'?=',
-				'*=',
-				'~',
-				'!~',
-				'*~',
-				'<=',
-				'>=',
-				'+',
-				'+=',
-				'-=',
-				'*',
-				'×',
-				'/',
-				'÷',
-				'**',
-				'@@',
-				...['∋', '∌', '⊇', '⊃', '⊅', '∈', '∉', '⊆', '⊂', '⊄'],
-			),
-
-		_binary_op_keyword: ($) =>
-			choice(
-				$._kw_and,
-				$._kw_or,
-				$._kw_contains,
-				$._kw_containsnot,
-				$._kw_containsall,
-				$._kw_containsany,
-				$._kw_containsnone,
-				$._kw_inside,
-				$._kw_notinside,
-				$._kw_allinside,
-				$._kw_anyinside,
-				$._kw_noneinside,
-				$._kw_outside,
-				$._kw_intersects,
-			),
 
 		// ================================================================
 		// Keyword tokens

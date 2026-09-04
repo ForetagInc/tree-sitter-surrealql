@@ -1153,6 +1153,45 @@ DEFINE TABLE knows TYPE RELATION IN person OUT person
       (Ident))))
 
 ==================================
+define :: Define table type relation enforced
+==================================
+
+DEFINE TABLE located_at TYPE RELATION IN supplier | customer OUT address ENFORCED SCHEMAFULL PERMISSIONS FOR select WHERE workspace = $auth.workspace;
+
+---
+
+(SurrealQL
+  (DefineStatement
+    (Keyword)
+    (Keyword)
+    (Ident)
+    (TableTypeClause
+      (Keyword)
+      (Keyword)
+      (Keyword)
+      (Ident)
+      (Ident)
+      (Keyword)
+      (Ident)
+      (EnforcedClause
+        (Keyword)))
+    (Keyword)
+    (PermissionsForClause
+      (Keyword)
+      (PermissionGroup
+        (Keyword)
+        (Keyword)
+        (WhereClause
+          (Keyword)
+          (BinaryExpression
+            (Ident)
+            (Operator)
+            (Path
+              (VariableName)
+              (Subscript
+                (Ident)))))))))
+
+==================================
 define :: Define table type normal
 ==================================
 
